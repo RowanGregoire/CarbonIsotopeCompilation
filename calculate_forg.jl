@@ -44,4 +44,24 @@ plot!(isotopes.Age[t], isotopes.d13C_carb[t], color=:red, alpha=0.1, markersize=
 d13C_mantle = -5.5
 
 forg = @. (d13C_mantle - 0) / (d13C_org_intial - 0)
-plot(d13C_carb.c, forg, xflip=true, xlabel="Age [Ma]", ylabel="f_org")
+
+plot(d13C_carb.c, forg, xflip=true, xlabel="Age [Ma]", ylabel="f_org", label="", framestyle=:box, legend=:bottomleft)
+
+forg = @. (d13C_mantle - d13C_carb.m) / (d13C_org_intial - d13C_carb.m)
+plot!(d13C_carb.c, forg, xflip=true, xlabel="Age [Ma]", ylabel="f_org", label="", framestyle=:box, legend=:bottomleft)
+
+
+
+des_marais = (;
+    age=[2650.0, 2495.5516180173463, 2047.2862072181294, 1949.6316329385436, 1853.1940688240234, 1747.3141844633037, 1646.8618856663252, 1553.2220460691974, 1451.8744754266536, 1350.582859274457, 1251.9162470079896, 1051.5664666811736, 957.5075512657118, 850.7471608277119, 756.0325287284863, 656.6550224336061],
+    forg=[0.08958593677142582, 0.10020889676396522, 0.1494628368926606, 0.19049706238925668, 0.17004010071808257, 0.11977338431409115, 0.12975286766763028, 0.14035064813951315, 0.14039261400727404, 0.14105567471789607, 0.16009238967121547, 0.1497514947102282, 0.19076697804304346, 0.2210044219590288, 0.21133867232428727, 0.14991501911778413]
+)
+
+plot!(des_marais.age, des_marais.forg, label="des marais", color=:black)
+
+
+
+## ----
+
+strauss_kerogen = importdataset("data/strauss_1992_17.10_orgHC_Summary.csv", ',', importas=:Tuple)
+plot(strauss_kerogen.H_C, strauss_kerogen.delC13_PDB, seriestype=:scatter, xlabel="H/C", ylabel="d13C")
