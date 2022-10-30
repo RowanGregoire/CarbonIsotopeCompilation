@@ -1,0 +1,5 @@
+Unit,Age (Ma),TOC (mg/g) min,TOC (mg/g) max,Tmax (C) min,Tmax (C) max,S2 (mg HC/g) min,S2 (mg HC/g) max,HI (mg HC/g Corg) min,HI (mg HC/g Corg) max,H/C min,H/C max,N
+Wooccalla Dolomite,750,4.7,5.8,459,485,0.13,0.19,28,33,0.45,0.45,2
+Chuar Group,850,3.0,17,423,470,0.32,1.9,48,160,0.5,0.8,8
+McMinn Formation,1340,14,20,430,437,4.8,8.2,306,403,0.90,1.10,3
+Barney Creek Formation,1500,5.6,5.6,447,447,0.17,0.17,30,30,0.45,0.45,1
