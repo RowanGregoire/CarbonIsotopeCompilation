@@ -20,8 +20,8 @@ using Plots; gr();
 # Import data as dictionary
 println("importing data")
 
-d13C = importdataset(raw"C:\\Users\\katie\\OneDrive\\Desktop\\Rocks\\Data\\Compiled_CarbonIsotopes_Data_UncertaintyUpdate.csv", ',', importas=:Dict);
-HC = importdataset(raw"C:\\Users\\katie\\OneDrive\\Desktop\\Rocks\\Data\\Compiled_hcRatio_Data_UncertaintyUpdate.csv", ',', importas=:Dict);
+d13C = importdataset("data/Compiled_CarbonIsotopes_Data_UncertaintyUpdate.csv", ',', importas=:Dict);
+HC = importdataset("data/Compiled_hcRatio_Data_UncertaintyUpdate.csv", ',', importas=:Dict);
 
 # Create a list of all elements (must match column names in .csv file) we want to resample
 # Elements that already have uncertanties must be listed first
