@@ -15398,7 +15398,7 @@ KEY,Formation,Std_Fm_Name,Location,Lat,Long,Age,Source_Uncertainty,Uncertainty,K
 16452,Umberatana Group ,Umberatana Gp,Australia,-23.7,134.1,675,,33.75,,LS,,,2.10,,SCHI75...1,,Strauss 1992,17.3,FALSE,Umberatana GpAustraliaLS2.1,0,FALSE,FALSE,,,,,,
 16453,Umberatana Group ,Umberatana Gp,Australia,-23.7,134.1,675,,33.75,,LS,,,6.10,,SCHI75...1,,Strauss 1992,17.3,FALSE,Umberatana GpAustraliaLS6.1,0,FALSE,FALSE,,,,,,
 16454,Umberatana Group ,Umberatana Gp,Australia,-23.7,134.1,675,,33.75,,DOL,,,1.60,,SCHI75...1,,Strauss 1992,17.3,FALSE,Umberatana GpAustraliaDOL1.6,0,FALSE,FALSE,,,,,,
-16455,Umberatana Group ,Umberatana Gp,Australia,-23.7,134.1,675,,33.75,,CARB,,3.3,,3,SCHI75...1,,Strauss 1992,17.4,TRUE,Umberatana GpAustraliaCARB3.3,1,TRUE,FALSE,,,,,,
+16455,Umberatana Group ,Umberatana Gp,Australia,-23.7,134.1,675,,33.75,,CARB,,,3.30,3,SCHI75...1,,Strauss 1992,17.4,TRUE,Umberatana GpAustraliaCARB3.3,1,TRUE,FALSE,,,,,,
 16456,Umkondo,Umkondo Gp,Zimbabwe,-19.2,30.1,1900,,95,,DOL,,,14.00,1,schid75,,Krissansen-Totton 2015,,FALSE,Umkondo GpZimbabweDOL14,0,FALSE,FALSE,,,,,,
 16457,Umkondo Group ,Umkondo Gp,Zimbabwe,-19.2,30.1,1900,,95,,DOL,,,14.00,,SCHI75...1,,Strauss 1992,17.3,FALSE,Umkondo GpZimbabweDOL14,1,FALSE,FALSE,,,,,,
 16458,Umkondo Group ,Umkondo Gp,Zimbabwe,-19.2,30.1,1900,,95,,DOL,,,14.00,1,SCHI75...1,,Strauss 1992,17.4,TRUE,Umkondo GpZimbabweDOL14,2,TRUE,FALSE,,,,,,
