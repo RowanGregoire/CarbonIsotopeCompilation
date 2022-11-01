@@ -1,4 +1,4 @@
-Key,Sample No.,Formation Name,Location,Country,Age,Uncertainty,Known Uncertainty,Lithology,Kerogen Type,H/C,d13C,Source,Table,Notes,Age Ref
+Key,Sample No.,Formation Name,Location,Country,Age,Uncertainty,Known Uncertainty,Lithology,Kerogen Type,HC,d13C,Source,Table,Notes,Age Ref
 1,160,Que River Beds,Tullah; Tasmania,Australia,520,26,,SH,,0.2,-23.8,McKirdy and Powell 74,1,,
 2,50,Inca Fm,Duchess; Queensland,Australia,530,27,,LS,,0.71,-30.8,McKirdy and Powell 74,1,,
 3,60,Beetle Creek Fm,Duchess; Queensland,Australia,530,27,,LS,,0.87,-31.3,McKirdy and Powell 74,1,,
