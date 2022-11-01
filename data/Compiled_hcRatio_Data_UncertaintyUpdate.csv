@@ -640,7 +640,7 @@ KEY,Formation,Std_Fm_Name,Location,Lat,Long,Age,Uncertainty,Known_Uncertainty,Li
 639,"Farrel Quartzite,  Australia",Farrel Quartzite,Australia,-23.7,134.1,3000,150,,,0.24,,Delarue et al. 2018,X,Rock-Eval,
 640,"Kromberg,  South Africa",Kromberg Fm,South Africa,-28.7,25.3,3300,165,,,0.39,,Delarue et al. 2018,X,Rock-Eval,
 641,"Hoeggonoeg,  South Africa",Hooggenoeg Fm,South Africa,-28.7,25.3,3400,170,,,1.35,,Delarue et al. 2018,X,Rock-Eval,
-642,642 Sweden,Alum Shale,Sweden,63.3,16.6,#REF!,23,,,1.03,,Birdwell and Washington 2015,,,
+642,642 Sweden,Alum Shale,Sweden,63.3,16.6,#REF!,23,,,1.03,,Birdwell and Washington 2015,X,fix this,
 643,"643 Colorado, U.S.","Anvil Points Mbr, Green River Fm",USA Colorado,39.7,-108.6,#REF!,3,,,1.56,,Birdwell and Washington 2015,,,
 644,"644 Colorado, U.S.","Garden Gulch Mbr, Green River Fm",USA Colorado,39.7,-108.6,#REF!,3,,,1.5,,Birdwell and Washington 2015,,,
 645,645 Israel,Ghareb Fm,Israel,30.92,34.77,#REF!,18,,,1.39,,Birdwell and Washington 2015,,,
