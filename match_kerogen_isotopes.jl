@@ -17,7 +17,6 @@ match = (Std_Fm_Name = [], Age = [], d13C_org = [], d13C_carb = [], HC = [])
 
 # For each element in match, get the average H/C ratio, δC13_org, and δC13_carb value
 for i in uniques
-    println(i)
     i_iso = findall(x -> x == i, isotopes.Std_Fm_Name)  # Returns an array of indices
     i_kgn = findall(x -> x == i, kerogen.Std_Fm_Name)
 
