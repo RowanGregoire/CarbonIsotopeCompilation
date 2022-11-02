@@ -88,7 +88,7 @@ d13C_min = similar(bincenters)
 d13C_min_sigma = similar(bincenters)
 
 for i = 1:length(bincenters)
-    t = (binedges[i] .< isotopes.Age .< binedges[i+1]) .& !isnan.(isotopes.d13C_org)
+    t = @. (binedges[i] < isotopes.Age < binedges[i+1]) & !isnan(isotopes.d13C_org)
 
     if count(t) > 2
         d13Cₜ = isotopes.d13C_org[t]
@@ -105,4 +105,6 @@ end
 
 plot!(bincenters, d13C_min, yerror=d13C_min_sigma)
 
+data = (Age=bincenters, d13C_min=d13C_min, d13C_min_sigma=d13C_min_sigma)
+exportdataset(data, "d13Cmin.csv", ',')
 ## -- Calculate r
