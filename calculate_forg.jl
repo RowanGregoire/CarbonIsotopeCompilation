@@ -65,3 +65,44 @@ plot!(des_marais.age, des_marais.forg, label="des marais", color=:black)
 
 strauss_kerogen = importdataset("data/SourceFiles/strauss_1992_17.10_orgHC_Summary.csv", ',', importas=:Tuple)
 plot(strauss_kerogen.H_C, strauss_kerogen.delC13_PDB, seriestype=:scatter, xlabel="H/C", ylabel="d13C")
+
+
+# ## --- Resample age and organic carbon
+#
+# t = @. !(isnan(isotopes.Age) | isnan(isotopes.d13C_org))
+# data = unelementify(isotopes, (:Age, :d13C_org), floatout=true, rows=t)
+# sigma = abs.(data.*0.01)
+# sigma[:,1] .= isotopes.Uncertainty[t]
+#
+# resampled = elementify(bsresample(data, sigma, 10^6), ("Age", "d13C_org"))
+
+## --- Calculate minimum real carbon isotope value for age bins
+
+using Chron
+nsteps = 10000
+dist = ones(10)
+
+binedges = 0:100:3800
+bincenters = cntr(binedges)
+d13C_min = similar(bincenters)
+d13C_min_sigma = similar(bincenters)
+
+for i = 1:length(bincenters)
+    t = (binedges[i] .< isotopes.Age .< binedges[i+1]) .& !isnan.(isotopes.d13C_org)
+
+    if count(t) > 2
+        d13Cₜ = isotopes.d13C_org[t]
+        sigmaₜ = abs.(d13Cₜ .* 0.01)
+        # sigma = fill(2., size(d13C)) # ten per mil uncertainty?
+
+        mindist = metropolis_min(nsteps, dist, d13Cₜ, sigmaₜ, burnin=5000)
+        d13C_min[i] = nanmean(mindist)
+        d13C_min_sigma[i] = nanstd(mindist)
+    else
+        d13C_min[i] = d13C_min_sigma[i] = NaN
+    end
+end
+
+plot!(bincenters, d13C_min, yerror=d13C_min_sigma)
+
+## -- Calculate r
