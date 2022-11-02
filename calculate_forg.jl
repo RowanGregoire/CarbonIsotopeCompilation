@@ -63,5 +63,5 @@ plot!(des_marais.age, des_marais.forg, label="des marais", color=:black)
 
 ## ----
 
-strauss_kerogen = importdataset("data/strauss_1992_17.10_orgHC_Summary.csv", ',', importas=:Tuple)
+strauss_kerogen = importdataset("data/SourceFiles/strauss_1992_17.10_orgHC_Summary.csv", ',', importas=:Tuple)
 plot(strauss_kerogen.H_C, strauss_kerogen.delC13_PDB, seriestype=:scatter, xlabel="H/C", ylabel="d13C")
