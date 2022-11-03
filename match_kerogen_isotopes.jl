@@ -69,8 +69,8 @@ plot!(rel, match.HC, match.d13C_carb,
 )
 
 
-## -- Normalize data
 
+## -- Normalize data
 # Resample d13C-org, HC values
 org_rs = NamedTuple{(:c, :m, :e)}(bin_bsr_means(isotopes.Age, isotopes.d13C_org, 0, 3700, 37,
     x_sigma=isotopes.Uncertainty, y_sigma=isotopes.d13C_org*0.01, sem=:sigma
@@ -87,20 +87,47 @@ norm_match = (d13C_org = (val = [], e = []), HC = (val = [], e = []))
 bi = findclosest(match.Age, org_rs.c)
 bh = findclosest(match.Age, hc_rs.c)
 
+# bi -> for each element in match, what is the index of the nearest bin
+
 # Subtract period d13C and H/C values, push value and error into the new tuple
-append!(norm_match.d13C_org.val, match.d13C_org[bi] - org_rs.c[bi])   # Values
-append!(norm_match.HC.val, match.HC[bh] - hc_rs.c[bh])
-append!(norm_match.HC.e, hc_rs.e[bh])                                 # Errors
-append!(norm_match.d13C_org.e, org_rs.e[bi])
+append!(norm_match.d13C_org.val, (match.d13C_org[bi] .- org_rs.m[bi]))   # Values
+append!(norm_match.HC.val, (match.HC[bh] .- hc_rs.m[bh]))
+                             
+append!(norm_match.d13C_org.e, org_rs.e[bi])                             # Errors
+append!(norm_match.HC.e, hc_rs.e[bh])    
 
 ## -- Plot data
-
 # Plot δ13C (org) data
 normed = plot(xlabel="H/C Ratio", ylabel="δC13",
-    framestyle=:box, size=(500,500), 
-    legend=:bottomright
+    framestyle=:box, size=(500,500), legend=:bottomright
 )
 
 plot!(normed, norm_match.HC.val, norm_match.d13C_org.val,
-    color=:"#038cfc", seriestype=:scatter, msc=:auto
+    xerror=norm_match.HC.e, yerror=norm_match.d13C_org.e,
+    color=:"#038cfc", label="", seriestype=:scatter, msc=:auto
 )
+
+# Add linear regression
+# Find indices where both a and b are not NaN
+t = all(!isnan, hcat(norm_match.HC.val, norm_match.d13C_org.val); dims=2) |>vec |> findall
+
+# Initialize matrices a (x values) and b (y values)
+a = [norm_match.HC.val[t] ones(length(norm_match.HC.val[t]))]
+b = norm_match.d13C_org.val[t]
+
+# Compute linear regression
+aTa = *(transpose(a), a)
+aTb = *(transpose(a), b)
+
+# Convert data type
+aTa = Array{Float64}(aTa)
+aTb = Array{Float64}(aTb)
+
+# Calculate slope, intercept and get vectors to plot
+mb = aTa\aTb
+lim = xlims(normed)
+x = [lim[1], lim[2]]
+y = mb[1] .*x .+ mb[2]
+
+# Add linear regression to plot
+plot!(normed, x, y, label="linear regression")
