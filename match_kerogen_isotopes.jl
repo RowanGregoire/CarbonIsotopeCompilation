@@ -69,7 +69,6 @@ plot!(rel, match.HC, match.d13C_carb,
 )
 
 
-
 ## -- Normalize data
 # Resample d13C-org, HC values
 org_rs = NamedTuple{(:c, :m, :e)}(bin_bsr_means(isotopes.Age, isotopes.d13C_org, 0, 3700, 37,
@@ -95,6 +94,7 @@ append!(norm_match.HC.val, (match.HC[bh] .- hc_rs.m[bh]))
                              
 append!(norm_match.d13C_org.e, org_rs.e[bi])                             # Errors
 append!(norm_match.HC.e, hc_rs.e[bh])    
+
 
 ## -- Plot data
 # Plot δ13C (org) data
@@ -129,5 +129,26 @@ lim = xlims(normed)
 x = [lim[1], lim[2]]
 y = mb[1] .*x .+ mb[2]
 
+#Calculate R²
+ssr = 0         # Initialize sum of residuals
+sst = 0         # Initialize sum of squares
+ybar = mean(norm_match.d13C_org.val[t])     # Mean of y values
+
+# For each data point, ssr and sst
+for i in t
+    xi = norm_match.HC.val[i]
+    yi = norm_match.d13C_org.val[i]
+    
+    # Find expected y value
+    yhat = mb[1] * xi + mb[2]
+
+    # Add to sums
+    ssr = ssr + (yi-yhat)^2
+    sst = sst + (yi-ybar)^2
+end
+
+r2 = 1 - (ssr/sst)
+r2 = trunc(r2, digits=3)
+
 # Add linear regression to plot
-plot!(normed, x, y, label="linear regression")
+plot!(normed, x, y, line=:dash, label="linear regression \n R²=$r2")
