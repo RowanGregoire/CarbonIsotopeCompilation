@@ -3,6 +3,7 @@
 using Plots
 using StatGeochem
 using Statistics
+using Chron
 
 
 ## -- Import data
@@ -25,10 +26,10 @@ for i in uniques
 
     # Average δC13_org, δC13_carb, and H/C values and add to NamedTuple
     push!(match.Std_Fm_Name, i)
-    push!(match.Age, mean(filter(!isnan, isotopes.Age[i_iso])))
-    push!(match.d13C_org, mean(filter(!isnan, isotopes.d13C_org[i_iso])))
-    push!(match.d13C_carb, mean(filter(!isnan, isotopes.d13C_carb[i_iso])))
-    push!(match.HC, mean(filter(!isnan, kerogen.HC_Ratio[i_kgn])))
+    push!(match.Age, nanmean(isotopes.Age[i_iso]))
+    push!(match.d13C_org, nanmean(isotopes.d13C_org[i_iso]))
+    push!(match.d13C_carb, nanmean(isotopes.d13C_carb[i_iso]))
+    push!(match.HC, nanmean(kerogen.HC_Ratio[i_kgn]))
     
 end
 
@@ -37,8 +38,8 @@ t = (match.Age .< 1600)
 
 
 ## -- Plot results
-rel = plot(xlabel="H/C Ratio", ylabel="δC13",
-    xlims=(0, 1.4), ylims=(-55, 15), framestyle=:box, size=(500,500), 
+rel = plot(xlabel="H/C Ratio", ylabel="δC13", title="Relationship Between H/C ratio and δ13C",
+    xlims=(0, 1.4), ylims=(-55, 15), framestyle=:box, size=(750,750), 
     legend=:bottomright
 )
 
@@ -68,8 +69,9 @@ plot!(rel, match.HC, match.d13C_carb,
     color=:"#3dbd46", seriestype=:scatter, label="δ13C (carb)", msc=:auto
 )
 
+display(rel)
 
-## -- Normalize data
+## -- Normalize data by subtracting out the average value for that 100Ma bin
 # Resample d13C-org, HC values
 org_rs = NamedTuple{(:c, :m, :e)}(bin_bsr_means(isotopes.Age, isotopes.d13C_org, 0, 3700, 37,
     x_sigma=isotopes.Uncertainty, y_sigma=isotopes.d13C_org*0.01, sem=:sigma
@@ -86,20 +88,18 @@ norm_match = (d13C_org = (val = [], e = []), HC = (val = [], e = []))
 bi = findclosest(match.Age, org_rs.c)
 bh = findclosest(match.Age, hc_rs.c)
 
-# bi -> for each element in match, what is the index of the nearest bin
-
 # Subtract period d13C and H/C values, push value and error into the new tuple
-append!(norm_match.d13C_org.val, (match.d13C_org[bi] .- org_rs.m[bi]))   # Values
-append!(norm_match.HC.val, (match.HC[bh] .- hc_rs.m[bh]))
-                             
+append!(norm_match.d13C_org.val, (match.d13C_org .- org_rs.m[bi]))   # Values
+append!(norm_match.HC.val, (match.HC .- hc_rs.m[bh]))
+
 append!(norm_match.d13C_org.e, org_rs.e[bi])                             # Errors
-append!(norm_match.HC.e, hc_rs.e[bh])    
+append!(norm_match.HC.e, hc_rs.e[bh])
 
 
 ## -- Plot data
 # Plot δ13C (org) data
-normed = plot(xlabel="H/C Ratio", ylabel="δC13",
-    framestyle=:box, size=(500,500), legend=:bottomright
+normed = plot(xlabel="H/C Ratio", ylabel="δC13", title="normalized with period average",
+    framestyle=:box, size=(750, 750), legend=:bottomright
 )
 
 plot!(normed, norm_match.HC.val, norm_match.d13C_org.val,
@@ -119,19 +119,19 @@ b = norm_match.d13C_org.val[t]
 aTa = *(transpose(a), a)
 aTb = *(transpose(a), b)
 
-# Convert data type
+# Convert data type 
 aTa = Array{Float64}(aTa)
 aTb = Array{Float64}(aTb)
 
-# Calculate slope, intercept and get vectors to plot
+# Calculate slope, intercept and from those get vectors to plot
 mb = aTa\aTb
 lim = xlims(normed)
 x = [lim[1], lim[2]]
 y = mb[1] .*x .+ mb[2]
 
 #Calculate R²
-ssr = 0         # Initialize sum of residuals
-sst = 0         # Initialize sum of squares
+ssr_val = 0         # Initialize sum of residuals
+sst_val = 0         # Initialize sum of squares
 ybar = mean(norm_match.d13C_org.val[t])     # Mean of y values
 
 # For each data point, ssr and sst
@@ -143,12 +143,111 @@ for i in t
     yhat = mb[1] * xi + mb[2]
 
     # Add to sums
-    ssr = ssr + (yi-yhat)^2
-    sst = sst + (yi-ybar)^2
+    global ssr_val = ssr_val + (yi-yhat)^2
+    global sst_val = sst_val + (yi-ybar)^2
 end
 
-r2 = 1 - (ssr/sst)
-r2 = trunc(r2, digits=3)
+r2_val = 1 - (ssr_val/sst_val)
+r2_val = round(r2_val, digits=3)
 
 # Add linear regression to plot
-plot!(normed, x, y, line=:dash, label="linear regression \n R²=$r2")
+plot!(normed, x, y, line=:dash, label="linear regression \n R²=$r2_val")
+display(normed)
+
+
+## -- Find minimum using metropolis and subtract from each data point
+# Copy metropolis code from calculate_forg.jl and add HC calculation
+nsteps = 10000
+dist = ones(10)
+
+binedges = 0:100:3800
+bincenters = cntr(binedges)
+d13C_min = similar(bincenters)          #δ13C
+d13C_min_sigma = similar(bincenters)
+HC_min = similar(bincenters)            # H/C
+HC_min_sigma = similar(bincenters)
+
+# Iterate through each bin center
+for i = 1:length(bincenters)
+    # Get indexes for data that falls in the bin and is not NaN
+    local t = @. (binedges[i] < isotopes.Age < binedges[i+1]) & !isnan(isotopes.d13C_org)
+    local s = @. (binedges[i] < kerogen.Age < binedges[i+1]) & !isnan(kerogen.HC_Ratio)
+
+    # δ13C: only do metropolis calculation if there are more than 2 data points: δ13C
+    if count(t) > 2
+        d13C_t = isotopes.d13C_org[t]
+        sigma_t = abs.(d13C_t .* 0.01)  # Error at 1% of value
+
+        mindist = metropolis_min(nsteps, dist, d13C_t, sigma_t, burnin=5000)
+        d13C_min[i] = nanmean(mindist)
+        d13C_min_sigma[i] = nanstd(mindist)
+    else
+        d13C_min[i] = d13C_min_sigma[i] = NaN
+    end
+
+    # HC: only do metropolis calculation if there are more than 2 data points
+    if count(s) > 2
+        HC_s = kerogen.HC_Ratio[s]
+        sigma_s = abs.(HC_s .* 0.01)  # Error at 1% of value
+
+        mindist = metropolis_min(nsteps, dist, HC_s, sigma_s, burnin=5000)
+        HC_min[i] = nanmean(mindist)
+        HC_min_sigma[i] = nanstd(mindist)
+    else
+        HC_min[i] = HC_min_sigma[i] = NaN
+    end
+
+end
+
+# Subtract metropolis calculated min from all values
+# Create new tuple to hold normed values
+norm_metro = (d13C = (val = [], err = []), HC = (val = [], err = []))
+
+# Find index of closest bin
+bi = findclosest(match.Age, bincenters)
+
+# Subtract minimum δ13C and H/C values
+append!(norm_metro.d13C.val, (match.d13C_org .- d13C_min[bi]))  # Values
+append!(norm_metro.HC.val, (match.HC .- HC_min[bi]))
+
+append!(norm_metro.d13C.err, d13C_min_sigma[bi])                # Error
+append!(norm_metro.HC.err, HC_min_sigma[bi])
+
+
+## -- Plot data
+# Normalize both axes
+plot_metro = plot(xlabel="H/C Ratio", ylabel="δC13", title="both axes normalized with metropolis_min",
+    framestyle=:box, size=(750, 750), legend=:bottomright
+)
+
+plot!(plot_metro, norm_metro.HC.val, norm_metro.d13C.val,
+    xerror=norm_metro.HC.err, yerror=norm_metro.d13C.err,
+    color=:"#038cfc", label="", seriestype=:scatter, msc=:auto
+)
+
+
+# Normalize only δC13
+metro_d13C = plot(xlabel="H/C Ratio", ylabel="δC13", title="δ13C normalized with metropolis_min",
+framestyle=:box, size=(750, 750), legend=:bottomright
+)
+
+plot!(metro_d13C, match.HC, norm_metro.d13C.val,
+    yerror=norm_metro.d13C.err,
+    color=:"#038cfc", label="", seriestype=:scatter, msc=:auto
+)
+
+
+# Normalize only HC
+metro_HC = plot(xlabel="H/C Ratio", ylabel="δC13", title="HC normalized with metropolis_min",
+framestyle=:box, size=(750, 750), legend=:bottomright
+)
+
+plot!(metro_HC, norm_metro.HC.val, match.d13C_org,
+    xerror=norm_metro.HC.err,
+    color=:"#038cfc", label="", seriestype=:scatter, msc=:auto
+)
+
+# Display plots
+display(plot_metro)
+display(metro_d13C)
+display(metro_HC)
