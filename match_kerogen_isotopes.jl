@@ -5,6 +5,9 @@ using StatGeochem
 using Statistics
 using Chron
 
+# Global variables
+global d13C_error = 0.2       # Strauss et al. (1992): uncertainty generally < 0.2‰
+
 
 ## -- Import data
 isotopes = importdataset("data/Compiled_CarbonIsotopes_Data_UncertaintyUpdate.csv", ',', importas=:Tuple)
@@ -38,7 +41,7 @@ t = (match.Age .< 1600)
 
 
 ## -- Plot results
-rel = plot(xlabel="H/C Ratio", ylabel="δC13", title="Relationship Between H/C ratio and δ13C",
+rel = plot(xlabel="H/C Ratio", ylabel="δC13", title="Known Relationship Between H/C ratio and δ13C",
     xlims=(0, 1.4), ylims=(-55, 15), framestyle=:box, size=(750,750), 
     legend=:bottomright
 )
@@ -74,7 +77,7 @@ display(rel)
 ## -- Normalize data by subtracting out the average value for that 100Ma bin
 # Resample d13C-org, HC values
 org_rs = NamedTuple{(:c, :m, :e)}(bin_bsr_means(isotopes.Age, isotopes.d13C_org, 0, 3700, 37,
-    x_sigma=isotopes.Uncertainty, y_sigma=isotopes.d13C_org*0.01, sem=:sigma
+    x_sigma=isotopes.Uncertainty, y_sigma=isotopes.d13C_org * d13C_error, sem=:sigma
 ))
 hc_rs = NamedTuple{(:c, :m, :e)}(bin_bsr_means(kerogen.Age, kerogen.HC_Ratio, 0, 3700, 37,
     x_sigma=kerogen.Uncertainty, y_sigma=kerogen.HC_Ratio*0.01, sem=:sigma
@@ -98,7 +101,7 @@ append!(norm_match.HC.e, hc_rs.e[bh])
 
 ## -- Plot data
 # Plot δ13C (org) data
-normed = plot(xlabel="H/C Ratio", ylabel="δC13", title="normalized with period average",
+normed = plot(xlabel="H/C Ratio", ylabel="δC13", title="normalized with resampled period average",
     framestyle=:box, size=(750, 750), legend=:bottomright
 )
 
@@ -156,7 +159,7 @@ display(normed)
 
 
 ## -- Find minimum using metropolis and subtract from each data point
-# Copy metropolis code from calculate_forg.jl and add HC calculation
+# base metropolis code is from calculate_forg.jl, added HC calculation here
 nsteps = 10000
 dist = ones(10)
 
@@ -176,7 +179,11 @@ for i = 1:length(bincenters)
     # δ13C: only do metropolis calculation if there are more than 2 data points: δ13C
     if count(t) > 2
         d13C_t = isotopes.d13C_org[t]
-        sigma_t = abs.(d13C_t .* 0.01)  # Error at 1% of value
+        # Error is generally 0.2‰. Create a vector the same length as d13C_t, fill with 0.2
+        sigma_t = similar(d13C_t)
+        for i in eachindex(sigma_t)
+            sigma_t[i] = d13C_error
+        end
 
         mindist = metropolis_min(nsteps, dist, d13C_t, sigma_t, burnin=5000)
         d13C_min[i] = nanmean(mindist)
@@ -251,3 +258,35 @@ plot!(metro_HC, norm_metro.HC.val, match.d13C_org,
 display(plot_metro)
 display(metro_d13C)
 display(metro_HC)
+
+
+## -- Plot all values (partially replicate plot from calculate_forg.jl)
+# Damn what's a guy gotta do to get statistically significant results
+
+# Plot all data (not resampled) and distinguish between data from different sources
+plot_array = []
+
+filters = ["All Data", "PMCID 1.1a", "Strauss 1992", "Krissansen-Totton 2015"]
+# Add subplots
+for i in filters
+    # Filter duplicates for all plots, by external reference if applicable
+    if i == "All Data"
+        t = @. (isotopes.Duplicate == "FALSE") & (isotopes.Circular_Citation == "FALSE")
+    else
+        t = @. (isotopes.Duplicate == "FALSE") & (isotopes.Circular_Citation == "FALSE") & (isotopes.External_Ref == i)
+    end
+    
+    active = plot(xlabel="Age (Ma)", ylabel="δC13", title="$i",
+        ylims=(-60,25), xlims=(0, 3800), size=(600,1200), msc=:auto, framestyle=:box
+    )
+    plot!(active, isotopes.Age[t], isotopes.d13C_carb[t], label="δ13C carb", color=:red,
+        msc=:auto, alpha=0.3, seriestype=:scatter, markersize=2
+    )
+    plot!(active, isotopes.Age[t], isotopes.d13C_org[t], label="δ13C carb", color=:blue,
+        msc=:auto, alpha=0.3, seriestype=:scatter, markersize=2
+    )
+
+    push!(plot_array, active)
+end
+all_iso = plot(plot_array..., layout = (length(filters),1))
+display(all_iso)
