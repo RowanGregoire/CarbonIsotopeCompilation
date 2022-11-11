@@ -1,5 +1,5 @@
 ## Matches H/C ratios and d13C-org values from the same formations
-# Imports 
+# Imports
 using Plots
 using StatGeochem
 using Statistics
@@ -20,7 +20,14 @@ schopf = importdataset("data/schopf_5-5_data.csv", ',', importas=:Tuple)
 uniques = intersect(Set(isotopes.Std_Fm_Name), Set(kerogen.Std_Fm_Name))
 
 # Create a new NamedTuple to store values
-match = (Std_Fm_Name = [], Age = [], d13C_org = [], d13C_carb = [], HC = [])
+match = (
+    Std_Fm_Name = String[],
+    Age = Float64[],
+    d13C_org = Float64[],
+    d13C_carb = Float64[],
+    HC = Float64[],
+    TOC = Float64[]
+)
 
 # For each element in match, get the average H/C ratio, δC13_org, and δC13_carb value
 for i in uniques
@@ -33,7 +40,7 @@ for i in uniques
     push!(match.d13C_org, nanmean(isotopes.d13C_org[i_iso]))
     push!(match.d13C_carb, nanmean(isotopes.d13C_carb[i_iso]))
     push!(match.HC, nanmean(kerogen.HC_Ratio[i_kgn]))
-    
+    push!(match.TOC, nanmean(isotopes.TOC[i_iso]))
 end
 
 # Only values younger than 1.6Ga
@@ -42,19 +49,19 @@ t = (match.Age .< 1600)
 
 ## -- Plot results
 rel = plot(xlabel="H/C Ratio", ylabel="δC13", title="Known Relationship Between H/C ratio and δ13C",
-    xlims=(0, 1.4), ylims=(-55, 15), framestyle=:box, size=(750,750), 
+    xlims=(0, 1.4), ylims=(-55, 15), framestyle=:box, size=(750,750),
     legend=:bottomright
 )
 
 # Show data from Schopf (1983) for comparison
 s = (schopf.Age .< 1600)
 plot!(rel, schopf.HC[.!s], schopf.d13C[.!s],  # Greater than 1.6 Ga
-    color=:"#ffac1c", seriestype=:scatter, label="Schopf 1983 > 1.6 Ga", 
+    color=:"#ffac1c", seriestype=:scatter, label="Schopf 1983 > 1.6 Ga",
     msc=:auto, shape=:utriangle
 )
 
 plot!(rel, schopf.HC[s], schopf.d13C[s],
-    color=:"#ff5733", seriestype=:scatter, label="Schopf 1983 < 1.6 Ga", 
+    color=:"#ff5733", seriestype=:scatter, label="Schopf 1983 < 1.6 Ga",
     msc=:auto, shape=:utriangle
 )
 
@@ -68,12 +75,29 @@ plot!(rel, match.HC[t], match.d13C_org[t],     # Less than 1.6 Ga
 )
 
 # Plot δC13 (carb) data for comparison
-plot!(rel, match.HC, match.d13C_carb, 
+plot!(rel, match.HC, match.d13C_carb,
     color=:"#3dbd46", seriestype=:scatter, label="δ13C (carb)", msc=:auto
 )
 
 display(rel)
 
+## -- Fit Rayliegh-fractionation style equation to δ13C-vs-HC
+
+using LsqFit
+
+s = (schopf.Age .< 1600)
+
+@. r₀(HC, p) = p[1]/(HC/p[2] + p[3])^(p[4]-1) + p[5]
+p₀ = Float64[1, 2, 0, 1.3, -30]
+lb = Float64[0, 0, 0, 1, -50]
+ub = Float64[Inf, 10, 1, 10, 0]
+
+fit = curve_fit(r₀, schopf.HC[s], schopf.d13C[s], p₀, lower=lb, upper=ub)
+display(fit.param)
+
+x = 0:0.01:1.5
+plot!(rel, x, r₀(x, fit.param), label="Rayleigh model")
+savefig("HC ratio and δ13C.pdf")
 ## -- Normalize data by subtracting out the average value for that 100Ma bin
 # Resample d13C-org, HC values
 org_rs = NamedTuple{(:c, :m, :e)}(bin_bsr_means(isotopes.Age, isotopes.d13C_org, 0, 3700, 37,
@@ -122,7 +146,7 @@ b = norm_match.d13C_org.val[t]
 aTa = *(transpose(a), a)
 aTb = *(transpose(a), b)
 
-# Convert data type 
+# Convert data type
 aTa = Array{Float64}(aTa)
 aTb = Array{Float64}(aTb)
 
@@ -141,7 +165,7 @@ ybar = mean(norm_match.d13C_org.val[t])     # Mean of y values
 for i in t
     xi = norm_match.HC.val[i]
     yi = norm_match.d13C_org.val[i]
-    
+
     # Find expected y value
     yhat = mb[1] * xi + mb[2]
 
@@ -275,7 +299,7 @@ for i in filters
     else
         t = @. (isotopes.Duplicate == "FALSE") & (isotopes.Circular_Citation == "FALSE") & (isotopes.External_Ref == i)
     end
-    
+
     active = plot(xlabel="Age (Ma)", ylabel="δC13", title="$i",
         ylims=(-60,25), xlims=(0, 3800), size=(600,1200), msc=:auto, framestyle=:box
     )
