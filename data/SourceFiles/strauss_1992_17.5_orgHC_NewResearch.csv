@@ -1,0 +1,113 @@
+Formation,Age (Ma),PPRG Sample No.,Lithology,C (%),H (%),N (%),H/C,N/C,KCl,delCorg (‰) (PDB)
+Khatyspyt Formation ,620,2723,SH,75.6,8.2,1.8,1.3,0.02,5,-36.2
+Boonall Dolomite ,640,2204,CARB,38.6,0.74,3.8,0.23,0.084,nd,-30.4
+Sheepbed Formation ,650,1642,SH,60,1.09,0.41,0.23,0.006,7,-29.9
+Sheepbed Formation ,650,1643,SH,58.7,1.08,0.42,0.22,0.006,7,-29.9
+Sheepbed Formation ,650,1645,SH,63.3,1.15,0.41,0.22,0.006,7,-29.7
+Sheepbed Formation ,650,1646,SH,63.8,1.23,0.43,0.23,0.006,7,-29.3
+Sheepbed Formation ,650,1650,SH,52,1.05,0.38,0.25,0.007,7,-28.5
+Biri Formation ,700,2412,CARB,20.2,1.15,0.66,0.69,0.028,nd,-30.5
+Biri Formation ,700,2413,CARB,14.2,0.62,0.25,0.53,0.015,7,-32.4
+Biri Formation ,700,2414,CARB,14.3,0.69,0.3,0.58,0.019,7,-32
+Biri Formation ,700,2415,CARB,16.9,0.66,0.35,0.47,0.018,7,-31.4
+Luoquan Formation ,700,2178,SILT,39.4,0.84,0.35,0.26,0.008,7,-28.9
+Luoquan Formation ,700,2185,SILT,27.3,0.7,0.39,0.31,0.013,7,-29.9
+Luoquan Formation ,700,2186,SILT,24.5,0.73,0.34,0.36,0.012,7,-29.7
+Twitya Formation ,700,1613,SH,50.6,1.72,0.71,0.41,0.012,6.5,-32.1
+Twitya Formation ,700,1653,SH,25,0.84,0.39,0.41,0.014,7,-28.6
+Twitya Formation ,700,1654,SH,17.5,0.56,0.29,0.39,0.014,7,-28.1
+Twitya Formation ,700,1655,SH,21.4,0.97,0.39,0.55,0.016,7,-28.5
+Tindelpina Shale Member ,750,1238,SILT,45,0.66,0.39,0.18,0.008,7,-23.9
+Woocalla Dolomite Member ,750,1239,SILT,44.4,2.2,0.6,0.6,0.023,6,-29.3
+River Wakefield Subgroup ,775,1219,CH,38.1,2.57,1.08,0.82,0.025,6,-31.7
+River Wakefield Subgroup ,775,1224,CH,39.6,1.09,0.32,0.33,0.007,7,-16.4
+Beck Spring Dolomite ,850,1271,CARB,82,0.92,1.45,0.14,0.016,7,-26.5
+Kingston Peak Formation ,850,2539,CARB,84.7,1.91,1.1,0.27,0.011,nd,-26
+Love's Creek Member ,850,1323,CARB,52.8,1.55,1.8,0.35,0.03,nd,-26.1
+Love's Creek Member ,850,1327,CH,52,1.7,1.95,0.39,0.032,nd,-29.7
+Walcott Member ,850,1088,SH,60.7,4.25,2.22,0.84,0.031,5.5,-27.8
+Walcott Member ,850,1095,CARB,59.6,4.3,1.66,0.87,0.024,5.5,-26.5
+Walcott Member ,850,1097,SH,53.4,4.06,1.76,0.91,0.028,6,-26.5
+Walcott Member ,850,1112,SH,71.3,4.56,2.42,0.77,0.029,5.5,-26.3
+Walcott Member ,850,1123,CARB,67,3.86,2.05,0.69,0.026,5.5,-26.5
+Walcott Member ,850,1357,CH,50,3.31,1.48,0.79,0.025,6,-27.2
+Awatubi Member ,862,1083,SH,47.5,2.39,3.01,0.6,0.055,6,-32.2
+Awatubi Member ,862,1087,SH,62.1,4.1,2.72,0.79,0.038,5.5,-27.4
+Carbon Canyon Member ,900,1126,SILT,66.4,4.11,2,0.74,0.026,5.5,-28.4
+Carbon Canyon Member ,900,1141,CARB,70,3.7,1.9,0.64,0.024,nd,-26.3
+Jupiter Member ,930,1062,SH,57.1,2.37,1.79,0.5,0.027,5.5,-25.7
+Jupiter Member ,930,1063,SH,47.9,2.64,1.4,0.66,0.025,6,-20.6
+Jupiter Member ,930,1067,SH,40.6,1.67,1.11,0.49,0.023,5.5,-19.6
+Jupiter Member ,930,1125,SH,38.1,2.01,1.34,0.63,0.031,6,-30
+Red Pine Shale ,950,1361,SH,19.3,1.08,0.58,0.68,0.026,5.5,-17.7
+Red Pine Shale ,950,1872,SH,32.6,1.69,0.84,0.62,0.023,6.5,-17.1
+Tanner Member ,950,1055,SH,43.1,1.83,1.02,0.51,0.02,5.5,-24.8
+Tanner Member ,950,1059,SH,40.7,1.88,1.08,0.55,0.023,nd,-22.4
+Tanner Member ,950,1060,SH,54.1,8.2,1.77,1.3,0.02,6.5,-36.2
+Tanner Member ,950,1061,SH,55.2,2.52,1.04,0.55,0.017,5.5,-28.1
+Tanner Member ,950,1080,SH,52.1,2.23,1.35,0.51,0.022,6,-20.9
+Allamoore Formation ,1050,1360,CH,65.8,1.65,1.1,0.31,0.015,7,-32.4
+Nonesuch Shale ,1055,2425,SILT,23,1.02,0.53,0.53,0.02,6,-33.5
+Hongshuizhuang Formation ,1250,2159,SH,64,3.75,1.42,0.71,0.019,6,-33.4
+Hongshuizhuang Formation ,1250,2160,SH,64.6,3.3,1.49,0.62,0.02,6,-33
+Wumishan Formation ,1325,1435,CH,72.4,3.2,2.7,0.54,0.031,6,-30.1
+McMinn Formation ,1340,1263,SILT,53.2,5.01,1.13,1.13,0.02,5,-32.1
+McMinn Formation ,1340,1264,SILT,53.4,5.33,1.19,1.19,0.02,5,-33.2
+McMinn Formation ,1340,1266,SILT,52.5,4.92,1.13,1.13,0.023,5,-32.7
+McMinn Formation ,1340,1268,SILT,70.9,1.78,0.98,0.3,0.012,7,-32.4
+McMinn Formation ,1340,1270,SILT,55,4.77,1.58,1.05,0.025,5,-32.5
+Yangzhuang Formation ,1350,2148,CH,72.1,3,2.2,0.49,0.026,nd,-28.4
+Bungle Bungle Dolomite ,1364,2234,CARB,29.7,0.83,1.5,0.34,0.043,nd,-22.6
+Bungle Bungle Dolomite ,1364,2235,CARB,29.5,0.65,1.35,0.26,0.039,nd,-25.1
+Dismal Lakes Group ,1400,1217,CH,74.5,4.15,1.28,0.67,0.015,nd,-28.7
+Greyson Shale ,1420,2321,SILT,41.6,1.27,0.4,0.37,0.01,7,-28.3
+Gaoyuzhuang Formation ,1425,1421,CH,50,1.57,0.91,0.38,0.016,6.5,-31.4
+Gaoyuzhuang Formation ,1425,2126,CH,60.7,2.65,0.85,0.52,0.012,6.5,-31
+Newland Limestone ,1440,2307,SH,55.5,1.94,0.9,0.42,0.014,6.5,-31.8
+Newland Limestone ,1440,2319,SH,45.4,0.99,0.52,0.26,0.01,7,-27.5
+Newland Limestone ,1440,1278,SH,54.1,0.49,0.27,0.11,0.004,7,-28.3
+Tuanshanzi Formation ,1750,2143,CARB,24.3,1.13,0.45,0.57,0.016,6.5,-31.4
+Chuanlinggou Formation ,1850,2139,SH,56.5,1.78,0.85,0.38,0.013,6.5,-31.3
+Chuanlinggou Formation ,1850,2140,SH,67.5,1.86,0.84,0.33,0.011,7,-33
+Chuanlinggou Formation ,1850,2144,SH,44.5,1.96,0.4,0.53,0.008,6.5,-32.7
+Koolpin Formation ,1885,1261,CH,83.9,1.21,0.17,0.17,0.007,7,-30.4
+Fontano Formation ,1900,1588,SH,61.2,0.69,0.28,0.14,0.004,7,-30.1
+Rove Formation ,1900,1295,SH,73.5,2.85,1.46,0.47,0.017,6.5,-31.6
+Rove Formation ,1900,2458,SH,64.4,2.25,1.3,0.42,0.018,6.5,-32.1
+Rove Formation ,1900,2459,SH,79.2,3.36,1.32,0.51,0.014,6.5,-31.6
+Union Island Group ,1900,1382,SH,79.6,1.53,1.06,0.23,0.012,7,-38.9
+Rocknest Formation ,1925,1511,CARB,64.2,0.96,1.1,0.18,0.015,7,-24.1
+Rocknest Formation ,1925,1516,CARB,67,2.5,0.99,0.45,0.013,7,-24.7
+Rocknest Formation ,1925,1524,CARB,76.1,0.7,1.08,0.12,0.012,7,-23.1
+Rocknest Formation ,1925,1524,CH,74.2,0.99,0.99,0.16,0.012,7,-24.2
+Rocknest Formation ,1925,1582,CARB,87.7,0.79,0.61,0.11,0.006,7,-12.6
+Tyler Formation ,1950,1363,SH,28.6,0.76,0.3,0.32,0.009,7,-31.8
+Tyler Formation ,1950,1364,SH,55.2,1.19,0.53,0.26,0.008,7,-31.7
+Gunflint Iroil Formation ,2090,1302,CH,22.6,0.6,0.39,0.32,0.015,6.5,-32.9
+Gunflint Iroil Formation ,2090,2436,CH,69.3,2.06,1.46,0.36,0.018,6.5,-31.7
+Gunflint Iroil Formation ,2090,2437,CARB,80.4,2.96,1.59,0.44,0.017,7,-31.7
+Gunflint Iroil Formation ,2090,2444,CH,76.1,3.41,0.43,0.54,0.005,6.5,-33.3
+Gunflint Iroil Formation ,2090,2453,CH,47,1.68,0.83,0.43,0.015,6.5,-33.1
+Reivilo Formation ,2300,2531,SH,71.7,0.77,0.67,0.13,0.008,nd,-34.5
+Reivilo Formation ,2300,2532,SH,74.5,2.14,0.46,0.35,0.005,7,-36.4
+Reivilo Formation ,2300,2533,SH,81.8,2.1,0.4,0.31,0.004,7,-36.7
+Klipfonteinheuwel Formation ,2325,1415,CH,37.2,0.41,0.45,0.13,0.01,7,-37.9
+Gamohaan Formation ,2450,2512,CARB,75.7,1.71,0.6,0.27,0.007,7,-32.1
+Gamohaan Formation ,2450,2513,CARB,73,1.47,0.63,0.25,0.008,7,-32.7
+Gamohaan Formation ,2450,2514,CARB,78.4,1.71,0.78,0.26,0.009,7,-34.6
+Gamohaan Formation ,2450,2517,CARB,86,1.98,0.95,0.28,0.01,7,-34.5
+Gamohaan Formation ,2450,2518,CARB,68.9,1.49,0.74,0.26,0.009,7,-34.6
+Gamohaan Formation ,2450,2520,SH,79.5,1.2,0.91,0.18,0.01,nd,-34.9
+Jeerinah Formation ,2650,1932,SH,25.6,1.01,0.28,0.48,0.009,7,-45.1
+Jeerinah Formation ,2650,1972,SH,31.7,0.93,0.2,0.36,0.006,7,-41.4
+Meentheena Carbonate Member ,2750,1355,CH,44.4,0.83,0.43,0.22,0.008,7,-51.8
+Tumbiana Formation ,2750,2050,CARB,28.7,0.68,0.41,0.28,0.012,7,-52.9
+Tumbiana Formation ,2750,2065,SH,60.3,2.38,0.26,0.47,0.004,7,-58.7
+Tumbiana Formation ,2750,2070,CARB,30.7,0.8,0.34,0.32,0.009,nd,-53.8
+Kromberg Formation ,3300,1391,CH,76.8,0.79,0.44,0.12,0.005,7,-30.3
+Kromberg Formation ,3300,1392,CH,88.8,1.06,0.54,0.14,0.005,7,-26.2
+Kromberg Formation ,3300,1396,CH,85.2,1.18,0.42,0.16,0.004,7,-32.6
+Fig Tree Group ,3350,1400,CH,73.2,1.03,0.63,0.18,0.007,7,-28.5
+Fig Tree Group ,3350,1403,CH,29.9,0.48,0.77,0.19,0.022,7,-28.6
+Hooggenoeg Formation ,3450,1386,CH,79.8,1.35,0.29,0.2,0.003,7,-36.7
+Theespruit Formation ,3550,1385,CH,88.3,0.45,0.21,0.06,0.002,7,-15.1
