@@ -1,112 +1,132 @@
-Unit,Age (Ma),Lithology,H/C,N/C,delC13 (PDB),N,Reference Code
-Wonoka Formation ,585,CARB,0.47,0,,1,MCKI
-Pertatataka Formation ,610,SH,0.66,0,,1,MCKI
-Khatyspyt Formation ,620,SH,1.3,0.02,-36.2,1,PPRG
-Boonall Dolomite ,640,CARB,0.23,0.084,-30.4,1,PPRG
-Brachina Formation ,650,SH,0.11,0,-20.5,3,MCKI
-Sheepbed Formation ,650,SH,0.23,0.006,-29.5,5,PPRG
-Umberatana Group ,675,CARB,0.49,0,,1,MCK.
-Biri Formation ,700,CARB,0.57,0.02,-31.6,4,PPRG
-Luoquan Formation ,700,SILT,0.31,0.011,-29.5,3,PPRG
-Twitya Formation ,700,SH,0.44,0.014,-29.3,4,PPRG
-Tapley Hill Formation ,750,CARB,0.24,0,,1,MCKI
-Tapley Hill Formation ,750,SH,0.12,0,-20.8,24,MCKJ
-Tindelpina Shale Member ,750,SILT,0.18,0.008,-23.9,1,PPRG
-Woocalla Dolomite Member ,750,SILT,0.6,0.023,-29.3,1,PPRG
-Carbon Canyon Member ,900,SILT,0.64,0.024,-26.3,1,PPRG
-Carbon Canyon Member ,900,SILT,0.74,0.026,-28.4,1,PPRG
-Jupiter Member ,930,SH,0.57,0.027,-24,4,PPRG
-Red Pine Shale ,950,SH,0.65,0.025,-17.4,2,PPRG
-Tanner Member ,950,SH,0.68,0.02,-26.5,5,PPRG
-Allamoore Formation ,1050,CH,0.31,0.015,-32.4,1,PPRG
-Nonesuch Shale ,1055,SILT,0.53,0.02,-33.5,1,PPRG
-Nonesuch Shale ,1055,SH,0.5,0,,1,LEVE754706
-Hongshuizhuang Formation ,1250,SH,0.67,0.02,-33.2,2,PPRG
-Wumishan Formation ,1325,CH,0.54,0.031,-30.1,1,PPRG
-McMinn Formation ,1340,SH,0.56,0.022,-32.2,3,HAYE83..93
-McMinn Formation ,1340,SH,1.17,0,-30.2,1,MCKI74.591
-McMinn Formation ,1340,SH,0.7,0,,6,MCKI80.187
-McMinn Formation ,1340,SILT,0.96,0.02,-32.6,5,PPRG
-Lansen Creek Shale Member ,1350,SH,0.93,0,,4,POWE87...1
-Velkerri Formation ,1350,SH,0.81,0,,7,POWE87...1
-Yangzhuang Formation ,1350,CH,0.49,0.026,-28.4,1,PPRG
-Bungle Bungle Dolomite ,1364,CARB,0.4,0.016,-30,3,HAYE83..93
-Bungle Bungle Dolomite ,1364,CARB,0.3,0.041,-23.9,2,PPRG
-Bungle Bungle Dolomite ,1364,CH,0.31,0.024,-30,1,HAYE83..93
-Bungle Bungle Dolomite ,1364,SH,0.45,0.015,-33.5,1,HAYE83..93
-Dismal Lakes Group ,1400,CH,0.67,0.015,-28.7,1,PPRG
-Greyson Shale ,1420,SILT,0.37,0.01,-28.3,1,PPRG
-Gaoyuzhuang Formation ,1425,CH,0.45,0.014,-31.2,2,PPRG
-Newland Limestone ,1440,SH,0.34,0.012,-29.7,2,PPRG
-Balbirini Formation ,1482,CARB,0.99,0,,1,POWE87...1
-Yalco Formation ,1485,CARB,0.99,0,,6,POWE87...1
-Lynott-Donnegan Member ,1490,SH,0.94,0,,1,POWE87...1
-Barney Creek Formation ,1500,SH,1.03,0,,19,POWE87...1
-HYC Pyritic Shale Member ,1500,SH,0.39,0.013,-38.9,1,HAYE83..93
-HYC Pyritic Shale Member ,1500,SH,0.64,0,-26.6,1,MCKI74.591
-Marimo Slate ,1500,SH,0.05,0,-25.8,1,MCKI74.591
-Tooganinie Formation ,1600,CARB,0.65,0,,1,MCKI76.163
-Paradise Creek Formation ,1650,CH,0.2,0,,1,LEVE754706
-Urquhart Shale ,1670,SH,0.13,0,-28.2,1,MCKI74.591
-Urquhart Shale ,1670,SH,0.1,0,-22.2,1,LEVE754706
-Urquhart Shale ,1670,SH,0.11,0.004,-28.3,1,PPRG
-Tuanshanzi Formation ,1750,CARB,0.57,0.016,-31.4,1,PPRG
-Earaheedy Group ,1800,CARB,0.27,0.005,-33.2,1,HAYE83..93
-Chuanlinggou Formation ,1850,SH,0.41,0.011,-32.3,3,PPRG
-Koolpin Formation ,1885,CH,0.17,0.007,-30.4,1,PPRG
-Fontano Formation ,1900,SH,0.14,0.004,-30.1,1,PPRG
-Golden Dyke Formation ,1900,SH,0.04,0,-15.8,1,MCKI74.591
-Rove Formation ,1900,SH,0.47,0.016,-31.8,3,PPRG
-Rove Formation ,1900,SH,0.41,0.012,-32.1,1,HAYE83..93
-Union Island Group ,1900,SH,0.23,0.012,-38.9,1,PPRG
-Rocknest Formation ,1925,CARB,0.2,0.012,-21.7,5,PPRG
-Tyler Formation ,1950,SH,0.29,0.009,-31.8,2,PPRG
-Duck Creek Dolomite ,2000,CARB,0.14,0.011,-25,1,HAYE83..93
-Duck Creek Dolomite ,2000,CH,0.32,0.005,-31.7,1,HAYE83..93
-Gunflint Iron Formation ,2090,CH,0.41,0.013,-32.8,4,PPRG
-Gunflint Iron Formation ,2090,CARB,0.44,0.017,-31.7,1,PPRG
-Gunflint Iron Formation ,2090,CH,0.1,0,,1,LEVE754706
-Gunflint Iron Formation ,2090,CH,0.61,0.022,-33.5,1,HAYE83..93
-Albanel Formation ,2100,CARB,0.14,0.004,-29.8,1,HAYE83..93
-McLeary Formation ,2100,CH,0.26,0.013,-28.4,1,HAYE83..93
-Reivilo Formation ,2300,SH,0.26,0.006,-35.9,3,PPRG
-Klipfonteinheuwel Formation ,2325,CH,0.13,0.01,-37.9,1,PPRG
-Malmani Subgroup ,2400,CARB,0.18,0.005,-33.8,2,HAYE83..93
-Gamonaan Formation ,2450,SH,0.18,0.01,-34.9,1,PPRG
-Gamonaan Formation ,2450,CARB,0.26,0.009,-33.7,5,PPRG
-Mt. McRae Shale ,2500,SH,0.11,0.008,-35.3,2,HAYE83..93
-Wittenoom Dolomite ,2500,SH,0.14,0.005,-41.8,1,HAYE83..93
-Bulawayan Group ,2600,CARB,0.1,0.008,-31.2,1,HAYE83..93
-Manjeri Formation ,2600,CH,0.15,0.005,-33,1,HAYE83..93
-Steeprock Group ,2600,CH,0.17,0.009,-27.2,1,HAYE83..93
-Jeerinah Formation ,2650,SH,0.42,0.008,-43.3,2,PPRG
-Jeerinah Formation ,2650,SH,0.14,0.004,-41,1,HAYE83..93
-Ventersdorp Supergroup ,2650,CH,0.14,0.002,-38.5,1,HAYE83..93
-Witwatersrand Supergroup ,2710,Q,0.71,0,,23,ZUMB78.223
-Meentheena Carbonate Member ,2750,CH,0.22,0.008,-51.8,1,PPRG
-Tumbiana Formation ,2750,CH,0.25,0.002,-51.2,1,HAYE83..93
-Tumbiana Formation ,2750,SH,0.47,0.004,-58.7,1,PPRG
-Tumbiana Formation ,2750,CARB,0.3,0.011,-53.4,2,PPRG
-Fortescue Group ,2800,SH,0.43,0,,1,MCKI76.163
-Mozaan Group ,3000,SH,0.11,0.003,-27.3,1,HAYE83..93
-Gorge Creek Group ,3200,SH,0.09,0,-29.9,1,HAYE83..93
-Kromberg Formation ,3300,CH,0.14,0.005,-29.7,3,PPRG
-Kromberg Formation ,3300,CH,0.13,0.003,-29.9,1,HAYE83..93
-Fig Tree Group ,3350,CH,0.16,0,,1,DUNG72.699
-Fig Tree Group ,3350,CH,0.45,0,-28,2,DUNG74.167
-Fig Tree Group ,3350,CH,0.16,0.006,-31.9,1,HAYE83..93
-Fig Tree Group ,3350,CH,0.19,0.015,-28.6,2,PPRG
-Fig Tree Group ,3350,CH,0.15,0,-26.4,2,LEVE754706
-Towers Formation ,3435,CH,0.25,0.005,-35.2,3,HAYE83..93
-Hooggenoeg Formation ,3450,CH,0.12,0.004,-31.6,1,HAYE83..93
-Hooggenoeg Formation ,3450,CH,0.53,0,-26.7,3,MCKI74.591
-Hooggenoeg Formation ,3450,CH,0.2,0.003,-36.7,1,PPRG
-Onverwacht Group ,3450,CH,0.15,0,,1,DUNG72.699
-Onverwacht Group ,3450,CH,0.59,0,-26,11,DUNG74.167
-Swartkoppie Formation ,3450,CH,0.1,0.006,-29.3,2,HAYE83..93
-Swartkoppie Formation ,3450,CH,0.3,0,-27.6,1,LEVE754706
-Theespruit Formation ,3550,CH,0.06,0.002,-15.1,1,PPRG
-Theespruit Formation ,3550,SH,0.02,0.001,-15.4,1,HAYE83..93
-Theespruit Formation ,3550,CH,0.05,0,-19.1,7,MCKI74.591
-Isua Supergroup ,3700,BIF,0.02,0.001,-10,1,HAYE83..93
-Isua Supergroup ,3700,H,0.01,0.001,-13.2,1,HAYE83.93
+KEY,Formation,Age (Ma),Lithology,H/C,N/C,dC13-org (PDB),N,Reference Code
+12011,Albanel Formation,2100,CARB,0.14,0.004,-29.8,1,HAYE83..93
+12036,Allamoore Formation,1050,CH,0.31,0.015,-32.4,1,PPRG
+12447,Biri Formation,700,CARB,0.57,0.02,-31.6,4,PPRG
+12528,Boonall Dolomite,640,CARB,0.23,0.084,-30.4,1,PPRG
+12542,Brachina Formation,650,SH,0.11,0,-20.5,3,MCKI74.591
+12671,Bulawayan Group,2600,CARB,0.1,0.008,-31.2,1,HAYE83..93
+12717,Bungle Bungle Dolomite,1364,SH,0.45,0.015,-33.5,1,HAYE83..93
+12718,Bungle Bungle Dolomite,1364,CARB,0.4,0.016,-30,3,HAYE83..93
+12719,Bungle Bungle Dolomite,1364,CH,0.31,0.024,-30,1,HAYE83..93
+12720,Bungle Bungle Dolomite,1364,CARB,0.3,0.041,-23.9,2,PPRG
+12795,Carbon Canyon Member,900,SILT,0.74,0.026,-28.4,1,PPRG
+12796,Carbon Canyon Member,900,SILT,0.64,0.024,-26.3,1,PPRG
+12880,Chuanlinggou Formation,1850,SH,0.41,0.011,-32.3,3,PPRG
+13047,Dismal Lakes Group,1400,CH,0.67,0.015,-28.7,1,PPRG
+13186,Duck Creek Dolomite,2000,CH,0.32,0.005,-31.7,1,HAYE83..93
+13187,Duck Creek Dolomite,2000,CARB,0.14,0.011,-25,1,HAYE83..93
+13217,Earaheedy Group,1800,CARB,0.27,0.005,-33.2,1,HAYE83..93
+13431,Fig Tree Group,3350,CH,0.16,0.006,-31.9,1,HAYE83..93
+13432,Fig Tree Group,3350,CH,0.19,0.015,-28.6,2,PPRG
+13433,Fig Tree Group,3350,CH,0.45,0,-28.4,2,DUNG74.167
+13434,Fig Tree Group,3350,CH,0.15,0,-26.4,2,LEVE754706
+13443,Fontano Formation,1900,SH,0.14,0.004,-30.1,1,PPRG
+13492,Gamonaan Formation,2450,SH,0.18,0.01,-34.9,1,PPRG
+13493,Gamonaan Formation,2450,CARB,0.26,0.009,-33.7,5,PPRG
+13522,Gaoyuzhuang Formation,1425,CH,0.45,0.014,-31.2,2,PPRG
+13559,Gorge Creek Group,3200,SH,0.09,0,-29.9,1,HAYE83..93
+13572,Greyson Shale,1420,SILT,0.37,0.01,-28.3,1,PPRG
+13647,Gunflint Iron Formation,2090,CH,0.61,0.022,-33.5,1,HAYE83..93
+13648,Gunflint Iron Formation,2090,CH,0.41,0.013,-32.8,4,PPRG
+13649,Gunflint Iron Formation,2090,CARB,0.44,0.017,-31.7,1,PPRG
+13832,Hongshuizhuang Formation,1250,SH,0.67,0.02,-33.2,2,PPRG
+13851,Hooggenoeg Formation,3450,CH,0.2,0.003,-36.7,1,PPRG
+13852,Hooggenoeg Formation,3450,CH,0.12,0.004,-31.6,1,HAYE83..93
+13853,Hooggenoeg Formation,3450,CH,0.53,0,-26.7,3,MCKI74.591
+13920,HYC Pyritic Shale Member,1500,SH,0.39,0.013,-38.9,1,HAYE83..93
+13921,HYC Pyritic Shale Member,1500,SH,0.64,0,-26.6,1,MCKI74.591
+14016,Isua Supergroup,3700,H,0.01,0.001,-13.2,1,HAYE83.93
+14017,Isua Supergroup,3700,BIF,0.02,0.001,-10,1,HAYE83..93
+14056,Jeerinah Formation,2650,SH,0.42,0.008,-43.3,2,PPRG
+14057,Jeerinah Formation,2650,SH,0.14,0.004,-41,1,HAYE83..93
+14076,Jupiter Member,930,SH,0.57,0.027,-24,4,PPRG
+14379,Khatyspyt Formation,620,SH,1.3,0.02,-36.2,1,PPRG
+14445,Klipfonteinheuwel Formation,2325,CH,0.13,0.01,-37.9,1,PPRG
+14466,Koolpin Formation,1885,CH,0.17,0.007,-30.4,1,PPRG
+14571,Kromberg Formation,3300,CH,0.13,0.003,-29.9,1,HAYE83..93
+14572,Kromberg Formation,3300,CH,0.14,0.005,-29.7,3,PPRG
+14855,Luoquan Formation,700,SILT,0.31,0.011,-29.5,3,PPRG
+14916,Malmani Subgroup,2400,CARB,0.18,0.005,-33.8,2,HAYE83..93
+14985,Manjeri Formation,2600,CH,0.15,0.005,-33,1,HAYE83..93
+14992,Marimo Slate,1500,SH,0.05,0,-25.8,1,MCKI74.591
+15066,McLeary Formation,2100,CH,0.26,0.013,-28.4,1,HAYE83..93
+15099,McMinn Formation,1340,SILT,0.96,0.02,-32.6,5,PPRG
+15100,McMinn Formation,1340,SH,0.56,0.022,-32.2,3,HAYE83..93
+15101,McMinn Formation,1340,SH,1.17,0,-30.2,1,MCKI74.591
+15106,Meentheena Carbonate Member,2750,CH,0.22,0.008,-51.8,1,PPRG
+15210,Mt. McRae Shale,2500,SH,0.11,0.008,-35.3,2,HAYE83..93
+15262,Mozaan Group,3000,SH,0.11,0.003,-27.3,1,HAYE83..93
+15307,Newland Limestone,1440,SH,0.34,0.012,-29.7,2,PPRG
+15368,Nonesuch Shale,1055,SILT,0.53,0.02,-33.5,1,PPRG
+15441,Onverwacht Group,3450,CH,0.59,0,-26,11,DUNG74.167
+15578,Red Pine Shale,950,SH,0.65,0.025,-17.4,2,PPRG
+15586,Reivilo Formation,2300,SH,0.26,0.006,-35.9,3,PPRG
+15644,Rocknest Formation,1925,CARB,0.2,0.012,-21.7,5,PPRG
+15684,Rove Formation,1900,SH,0.41,0.012,-32.1,1,HAYE83..93
+15685,Rove Formation,1900,SH,0.47,0.016,-31.8,3,PPRG
+15786,Sheepbed Formation,650,SH,0.23,0.006,-29.5,5,PPRG
+15919,Steeprock Group,2600,CH,0.17,0.009,-27.2,1,HAYE83..93
+15984,Swartkoppie Formation,3450,CH,0.1,0.006,-29.3,2,HAYE83..93
+15985,Swartkoppie Formation,3450,CH,0.3,0,-27.6,1,LEVE754706
+16016,Tanner Member,950,SH,0.68,0.02,-26.5,5,PPRG
+16129,Tapley Hill Formation,750,SH,0.12,0,-20.8,24,MCKJ75.345
+16151,Theespruit Formation,3550,CH,0.05,0,-19.1,7,MCKI74.591
+16152,Theespruit Formation,3550,SH,0.02,0.001,-15.4,1,HAYE83..93
+16153,Theespruit Formation,3550,CH,0.06,0.002,-15.1,1,PPRG
+16187,Tindelpina Shale Member,750,SILT,0.18,0.008,-23.9,1,PPRG
+16235,Towers Formation,3435,CH,0.25,0.005,-35.2,3,HAYE83..93
+16408,Tuanshanzi Formation,1750,CARB,0.57,0.016,-31.4,1,PPRG
+16435,Tumbiana Formation,2750,SH,0.47,0.004,-58.7,1,PPRG
+16436,Tumbiana Formation,2750,CARB,0.3,0.011,-53.4,2,PPRG
+16437,Tumbiana Formation,2750,CH,0.25,0.002,-51.2,1,HAYE83..93
+16445,Twitya Formation,700,SH,0.44,0.014,-29.3,4,PPRG
+16448,Tyler Formation,1950,SH,0.29,0.009,-31.8,2,PPRG
+16480,Union Island Group,1900,SH,0.23,0.012,-38.9,1,PPRG
+16528,Urquhart Shale,1670,SH,0.11,0.004,-28.3,1,PPRG
+16529,Urquhart Shale,1670,SH,0.13,0,-28.2,1,MCKI74.591
+16530,Urquhart Shale,1670,SH,0.1,0,-22.2,1,LEVE754706
+16588,Ventersdorp Supergroup,2650,CH,0.14,0.002,-38.5,1,HAYE83..93
+16731,Wittenoom Dolomite,2500,SH,0.14,0.005,-41.8,1,HAYE83..93
+16781,Woocalla Dolomite Member,750,SILT,0.6,0.023,-29.3,1,PPRG
+16794,Wumishan Formation,1325,CH,0.54,0.031,-30.1,1,PPRG
+16814,Yangzhuang Formation,1350,CH,0.49,0.026,-28.4,1,PPRG
+16885,Awatubi Member,862,SH,0.7,0.047,-29.8,2,PPRG
+16886,Balbirini Formation,1482,CARB,0.99,0,,1,POWE87...1
+16887,Barney Creek Formation,1500,SH,1.03,0,,19,POWE87...1
+16888,Beck Spring Dolomite,850,CARB,0.14,0.016,-26.5,1,PPRG
+16889,Bitter Springs Formation,850,CARB,0.73,0,-18.6,1,MCK.I74.591
+16890,Bitter Springs Formation,850,CARB,0.82,0,,1,MCKI76.163
+16891,Bitter Springs Formation,850,CH,0.1,0,,1,LEVE754706
+16892,Bitter Springs Formation,850,CH,0.34,0.025,,1,HAYE83..93
+16893,Bitter Springs Formation,850,CARB,0.37,0,,2,MCKI80.187
+16894,"Black Mudstone, Utah",830,SH,0.1,0,-21.9,1,LEVE754706
+16895,Burra Group,800,CH,0.17,0.01,-23.2,1,HAYE83..93
+16896,Fig Tree Group,3350,CH,0.16,0,,1,DUNG72.699
+16897,Fortescue Group,2800,SH,0.43,0,,1,MCKI76.163
+16898,Golden Dyke Formation,1900,SH,0.04,0,-15.8,1,MCK174.591
+16899,Gunflint Iron Formation,2090,CH,0.1,0,,1,LEVE754706
+16900,Kingston Peak Formation,850,CARB,0.27,0.011,-26,1,PPRG
+16901,Lansen Creek Shale Member,1350,SH,0.93,0,,4,POWE87...1
+16902,Love's Creek Member,850,CH,0.39,0.032,-29.7,1,PPRG
+16903,Love's Creek Member,850,CARB,0.35,0.03,-26.1,1,PPRG
+16904,Lynott-Donnegan Member,1490,SH,0.94,0,,1,POWE87...1
+16905,McMinn Formation,1340,SH,0.7,0,,6,MCKI80.187
+16906,Nonesuch Shale,1055,SH,0.5,0,,1,LEVE754706
+16907,Onverwacht Group,3450,CH,0.15,0,,1,DUNG72.699
+16908,Paradise Creek Formation,1650,CH,0.2,0,,1,LEVE754706
+16909,Pertatataka Formation,610,SH,0.66,0,,1,MCKI80.187
+16910,River Wakefield Subgroup,775,CH,0.58,0.016,-24.1,2,PPRG
+16911,Skillogalee Dolomite,770,CARB,0.1,0,-10.8,1,MCKI74.591
+16912,Skillogalee Dolomite,770,CH,0.2,0,,1,DUNG72.699
+16913,Skillogalee Dolomite,770,CH,0.31,0,,1,MCKI76.163
+16914,Skillogalee Dolomite,770,CARB,0.23,0,,4,MCKI8O.187
+16915,Tapley Hill Formation,750,CARB,0.24,0,,1,MCKI76.163
+16916,Tooganinie Formation,1600,CARB,0.65,0,,1,MCKI76.163
+16917,Umberatana Group,675,CARB,0.49,0,,1,MCK.I76.163
+16918,Velkerri Formation,1350,SH,0.81,0,,7,POWE87...1
+16919,Walcott Member,850,CH,0.79,0.025,-27.2,1,PPRG
+16920,Walcott Member,850,SH,0.84,0.029,-26.9,3,PPRG
+16921,Walcott Member,850,CARB,0.78,0.025,-26.5,2,PPRG
+16922,Witwatersrand Supergroup,2710,Q,0.71,0,,23,ZUMB78.223
+16923,Wonoka Formation,585,CARB,0.47,0,,1,MCKI76.163
+16924,Yalco Formation,1485,CARB,0.99,0,,6,POWE87...1
