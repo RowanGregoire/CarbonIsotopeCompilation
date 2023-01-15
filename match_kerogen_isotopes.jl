@@ -79,10 +79,8 @@ plot!(rel, match.HC, match.d13C_carb,
     color=:"#3dbd46", seriestype=:scatter, label="δ13C (carb)", msc=:auto
 )
 
-display(rel)
 
 ## -- Fit Rayliegh-fractionation style equation to δ13C-vs-HC
-
 using LsqFit
 
 s = (schopf.Age .< 1600)
@@ -97,7 +95,14 @@ display(fit.param)
 
 x = 0:0.01:1.5
 plot!(rel, x, r₀(x, fit.param), label="Rayleigh model")
+display(rel)
 savefig("HC ratio and δ13C.pdf")
+
+
+## -- Repeat above using key system
+# Compares individual samples rather than averages for formations
+
+
 ## -- Normalize data by subtracting out the average value for that 100Ma bin
 # Resample d13C-org, HC values
 org_rs = NamedTuple{(:c, :m, :e)}(bin_bsr_means(isotopes.Age, isotopes.d13C_org, 0, 3700, 37,
@@ -285,8 +290,6 @@ display(metro_HC)
 
 
 ## -- Plot all values (partially replicate plot from calculate_forg.jl)
-# Damn what's a guy gotta do to get statistically significant results
-
 # Plot all data (not resampled) and distinguish between data from different sources
 plot_array = []
 
@@ -295,9 +298,9 @@ filters = ["All Data", "PMCID 1.1a", "Strauss 1992", "Krissansen-Totton 2015"]
 for i in filters
     # Filter duplicates for all plots, by external reference if applicable
     if i == "All Data"
-        t = @. (isotopes.Duplicate == "FALSE") & (isotopes.Circular_Citation == "FALSE")
+        local t = @. (isotopes.Duplicate == "FALSE") & (isotopes.Circular_Citation == "FALSE")
     else
-        t = @. (isotopes.Duplicate == "FALSE") & (isotopes.Circular_Citation == "FALSE") & (isotopes.External_Ref == i)
+        local t = @. (isotopes.Duplicate == "FALSE") & (isotopes.Circular_Citation == "FALSE") & (isotopes.External_Ref == i)
     end
 
     active = plot(xlabel="Age (Ma)", ylabel="δC13", title="$i",
