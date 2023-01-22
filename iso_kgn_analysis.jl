@@ -50,8 +50,10 @@ end
 ## -- Plot data and calibrated fractionation curve
 matches = build_match(kerogen, isotopes)
 plotmatch = plot(matches.hc, matches.d13c_org, seriestype=:scatter, msc=:auto,
-    framestyle=:box, label="", xlabel="H/C ratio", ylabel="δC13 org")
-display(plotmatch)
+    framestyle=:box, label="", xlabel="H/C ratio", ylabel="δC13 org", 
+    title="H/C and δ13C Relationship"
+)
+savefig(plotmatch, "output/org_kgn_matches.png")
 
 #= hopefully this will work when I get the domain error to work?
 (x, y) = fit_rayleigh(matches.d13c_org, matches.hc)
@@ -66,9 +68,10 @@ isotoperaw = plot(isotopes.age, isotopes.d13c_org, label="organic",
     seriestype=:scatter, msc=:auto, alpha=0.25, framestyle=:box
 )
 plot!(isotopes.age, isotopes.d13c_carb, label="carbonate", seriestype=:scatter,
-    msc=:auto, alpha=0.25, framestyle=:box, xlabel="Age [Ma]", ylabel="d13C [PDB OR VPDB]"
+    msc=:auto, alpha=0.25, framestyle=:box, xlabel="Age [Ma]", ylabel="d13C [PDB OR VPDB]",
+    title="Raw Isotope Data"
 )
-
+savefig(isotoperaw, "output/raw_data.png")
 
 ## -- Only use the data from isotopes and kerogen that has age and isotope uncertainties
 naniso_age = NamedTuple{(:age, :uncert)}(sync_vectors(isotopes.age, isotopes.age_uncertainty))
@@ -78,36 +81,37 @@ nankgn_age = NamedTuple{(:age, :uncert)}(sync_vectors(kerogen.age, kerogen.age_u
 
 
 ## -- Visualize the data loss
-# Count the data in the filtered and unfiltered datasets
+# Count the data in the filtered and unfiltered datasets and put the counts into matrices
 edges = 0:100:3800
 (countall_org, all_org_ctr) = count_data(isotopes.age, isotopes.d13c_org, edges)
 (countorg, org_ctr) = count_data(isotopes.age, nanorganic.iso, edges)
+knitorg = knit_vectors([countall_org, countorg])
 
 (countall_carb, all_carb_ctr) = count_data(isotopes.age, isotopes.d13c_carb, edges)
 (countcarb, carb_ctr) = count_data(isotopes.age, nancarbonate.iso, edges)
+knitcarb = knit_vectors([countall_carb, countcarb])
 
 (countall_hc, all_hc_ctr) = count_data(kerogen.age, kerogen.hc, edges)
 (counthc, hc_ctr) = count_data(nankgn_age.age, nankgn_age.age, edges)
+knithc = knit_vectors([countall_hc, counthc])
 
-# Put the data into a format that groupedbar() can read. Centers should all be the same
-fmt_data = zeros(38,6)
-all_data = [countall_org, countorg, countall_carb, countcarb, countall_hc, counthc]
-
-# For each column, put the counts into the row
-nrows = size(fmt_data, 1)
-ncols = size(fmt_data, 2)
-
-for i in 1:ncols
-    for j in 1:nrows
-        fmt_data[j, i] = all_data[i][j]
-    end
-end
-
-# Plot the data
-groupedbar(fmt_data, bar_width=0.7)
+# Plot
+gbo = groupedbar(knitorg, bar_width=0.7, xlabel="100 Ma bin", ylabel="count",
+    title="δ13C organic", xlims=(0,38), label="", framestyle=:box
+)
+gbc = groupedbar(knitcarb, bar_width=0.7, xlabel="100 Ma bin", ylabel="count",
+    title="δ13C carbonate", xlims=(0,38), label="", framestyle=:box
+)
+gbh = groupedbar(knithc, bar_width=0.7, xlabel="100 Ma bin", ylabel="count",
+    title="H/C ratio (ages without uncertainties removed)", xlims=(0,38), label="",
+    framestyle=:box
+)
+savefig(gbo, "output/loss_organic.png")
+savefig(gbc, "output/loss_carbonate.png")
+savefig(gbh, "output/loss_hc.png")
 
 
-## -- Resample d13C and H/C values
+## -- Resample d13C and H/C values using only age and isotope values that have uncertainty
 org_rs = NamedTuple{(:c, :m, :e)}(bin_bsr_means(naniso_age.age, nanorganic.iso, 0, 3800, 38,
     x_sigma=naniso_age.uncert, y_sigma=nanorganic.uncert, sem=:sigma
 ))
@@ -122,29 +126,50 @@ hc_rs = NamedTuple{(:c, :m, :e)}(bin_bsr_means(nankgn_age.age, kerogen.hc, 0, 38
 
 
 ## -- Use the Rayleigh fractionation curve to correct d13C values
-# Parameters in as 0 for now because the fractionation function doesn't work :(
+#= 
+    Parameters in as 0 for now because the fractionation function doesn't work :(
+
+    It's so odd that this looks like it corrects the values evenly across the board??
+    with the WILD exception of the last two values WHAT is going on??
+
+    Maybe because the last two bins have such low values? There's not a lot of data there...
+    It could also be a product of the equation used - switching to the Rayleigh equation
+    could help 
+=#
 org_initial = org_rs.m .- Δδ.(hc_rs.m, 0)
 
 
-## -- Plot resampled isotope values with raw data for comparison
+## -- Plot resampled values with raw data for comparison
+hydrocarbons = plot(kerogen.age, kerogen.hc, label="H/C ratio (raw data)", seriestype=:scatter,
+    msc=:auto, alpha=0.25, framestyle=:box, xlabel="Age [Ma]", ylabel="H/C ratio"
+)
+plot!(hydrocarbons, hc_rs.c, hc_rs.m, label="resampled mean", yerror=hc_rs.e, 
+    seriestype=:scatter, msc=:auto, title="Resampled H/C values"
+)
+display(hydrocarbons)
+savefig(hydrocarbons, "output/rs_kerogen.png")
+
 organics = plot(isotopes.age, isotopes.d13c_org, label="organic (raw data)", seriestype=:scatter,
     msc=:auto, alpha=0.25, framestyle=:box, xlabel="Age [Ma]", ylabel="d13C [‰]"
 )
 plot!(organics, org_rs.c, org_rs.m, label="resampled mean", yerror=org_rs.e, 
     seriestype=:scatter, msc=:auto
 )
+#=
 plot!(organics, org_rs.c, org_initial, label="corrected resampled mean", yerror=org_rs.e, 
-    seriestype=:scatter, msc=:auto, legend=:bottomleft
+    seriestype=:scatter, msc=:auto, legend=:bottomleft, title="Resampled δ13C organic"
 )
-display(organics)
+=#
+#display(organics)
+savefig(organics, "output/rs_organics.png")
 
 carbonates = plot(isotopes.age, isotopes.d13c_carb, label="carbonate", seriestype=:scatter,
     msc=:auto, alpha=0.25, framestyle=:box, xlabel="Age [Ma]", ylabel="d13C [‰]"
 )
 plot!(carbonates, carb_rs.c, carb_rs.m, label="resampled mean", yerror=carb_rs.e, 
-    seriestype=:scatter, msc=:auto
+    seriestype=:scatter, msc=:auto, title="Resampled δ13C carbonate"
 )
-display(carbonates)
+savefig(carbonates, "output/rs_carbonates.png")
 
 
 ## -- Calculate forg with resampled means
@@ -165,21 +190,89 @@ des_marais = (;
         0.14991501911778413]
 )
 
-plotforg = plot(org_rs.c, forg, marker=:circle, msc=:auto, label="calculated forg")
-plot!(plotforg, des_marais.age, des_marais.forg, marker=:circle, msc=:auto, label="des marais",
-    xlabel="Age [Ma]", ylabel="Carbon buried as organic"   
+plotforg = plot(org_rs.c, forg, marker=:circle, msc=:auto, label="calculated f(org)")
+plot!(plotforg, des_marais.age, des_marais.forg, marker=:circle, msc=:auto, 
+    label="Des Marais f(org)", xlabel="Age [Ma]", ylabel="Fraction of carbon buried as organic", 
+    title="Preliminary f(org)"   
 )
 plot!(plotforg, [2500], seriestype=:vline, label="GOE [2500 Ma]")
-display(plotforg)
+savefig(plotforg, "output/prelim_forg")
 
 
 ## -- Calculate δ13C MCMC minimum for each bin
 
 
 
+#=
+## -- Find minimum using metropolis and subtract from each data point
+# base metropolis code is from calculate_forg.jl, added HC calculation here
+nsteps = 10000
+dist = ones(10)
+
+binedges = 0:100:3800
+bincenters = cntr(binedges)
+d13C_min = similar(bincenters)          #δ13C
+d13C_min_sigma = similar(bincenters)
+HC_min = similar(bincenters)            # H/C
+HC_min_sigma = similar(bincenters)
+
+# Iterate through each bin center
+for i = 1:length(bincenters)
+    # Get indexes for data that falls in the bin and is not NaN
+    local t = @. (binedges[i] < isotopes.Age < binedges[i+1]) & !isnan(isotopes.d13C_org)
+    local s = @. (binedges[i] < kerogen.Age < binedges[i+1]) & !isnan(kerogen.HC_Ratio)
+
+    # δ13C: only do metropolis calculation if there are more than 2 data points: δ13C
+    if count(t) > 2
+        d13C_t = isotopes.d13C_org[t]
+        # Error is generally 0.2‰. Create a vector the same length as d13C_t, fill with 0.2
+        sigma_t = similar(d13C_t)
+        for i in eachindex(sigma_t)
+            sigma_t[i] = d13C_error
+        end
+
+        mindist = metropolis_min(nsteps, dist, d13C_t, sigma_t, burnin=5000)
+        d13C_min[i] = nanmean(mindist)
+        d13C_min_sigma[i] = nanstd(mindist)
+    else
+        d13C_min[i] = d13C_min_sigma[i] = NaN
+    end
+
+    # HC: only do metropolis calculation if there are more than 2 data points
+    if count(s) > 2
+        HC_s = kerogen.HC_Ratio[s]
+        sigma_s = abs.(HC_s .* 0.01)  # Error at 1% of value
+
+        mindist = metropolis_min(nsteps, dist, HC_s, sigma_s, burnin=5000)
+        HC_min[i] = nanmean(mindist)
+        HC_min_sigma[i] = nanstd(mindist)
+    else
+        HC_min[i] = HC_min_sigma[i] = NaN
+    end
+
+end
+
+=#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## old code old code old code!!
+#=
 # Global variables
 global d13C_error = 0.2       # Strauss et al. (1992): uncertainty generally < 0.2‰
 
@@ -488,3 +581,4 @@ for i in filters
 end
 all_iso = plot(plot_array..., layout = (length(filters),1))
 display(all_iso)
+=#

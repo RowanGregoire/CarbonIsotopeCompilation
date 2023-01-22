@@ -18,7 +18,7 @@
 
 using StatGeochem
 using Test
-isotopes = importdataset("isotopes.csv", ',', importas=:Tuple)
+isotopes = importdataset("data/isotopes.csv", ',', importas=:Tuple)
 
 ## Count by country
 """
@@ -174,25 +174,6 @@ end
 @test cc1 == cc2 == cc3    # Carbonate
 
 
-## Print this data to the file
-# I've changed how the functions return things so this won't actually work anymore
-
-#=
-io = open("metadata.txt", "w")
-write(io, "country, total, % total, count organic, % total, count carbonate, % total\n")
-all = locats.count_org .+ locats.count_carb
-per_all = all ./ sum(all) .* 100
-per_org = locats.count_org ./ sum(locats.count_org) .* 100
-per_carb = locats.count_carb ./ sum(locats.count_carb) .* 100
-
-for i in 1:lastindex(locats2.country)
-    write(io, "$(locats2.country[i]), $(all[i]), $(round(per_all[i], digits = 2)), ")
-    write(io, "$(locats2.count_org[i]), $(round(per_org[i], digits = 2)), ")
-    write(io, "$(locats2.count_carb[i]), $(round(per_carb[i], digits = 2))\n")
-end
-close(io)
-=#
-
 ## Write a function that calls find_locat but only passes a subsection of the compilation
 """
     getmetadata(compilation, maxage, minage)
@@ -232,7 +213,7 @@ Age divisions and bounds
 periods = ["All Data", "Phanerozoic", "Neoproterozoic", "Mesoproterozoic", "Paleoproterozoic", "Archean"]
 ageconstraints = ((0,4000), (0,541), (541,1000), (1000, 1600), (1600, 2500), (2500, 4000))
 
-file = open("metadata.csv", "w")
+file = open("output/metadata.csv", "w")
 
 for i in 1:lastindex(ageconstraints)
     (country, org, carb) = getmetadata(isotopes, ageconstraints[i][1], ageconstraints[i][2])
@@ -271,4 +252,3 @@ for i in 1:lastindex(ageconstraints)
 end
 
 close(file)
-
