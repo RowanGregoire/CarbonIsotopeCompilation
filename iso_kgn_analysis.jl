@@ -1,26 +1,201 @@
-## Matches H/C ratios and d13C-org values from the same formations
-# Imports
+#= 
+    Match H/C ratios and δ13C org values from the same formations and uses
+        this plot to fit a Rayleigh fractionation curve to the H/C and δ13C org relationship
+
+    Resample δ13C and H/C values
+
+    Correct δ13C org values for alteration using the Rayleigh fractionation curve
+
+    Calculate fraction of carbon buried as organic matter
+=#
+## -- Load the packages, functions, and data we'll be using
 using Plots
 using StatGeochem
 using Statistics
 using Chron
+using LsqFit
+using StatsPlots
 
+include("intake.jl")
+
+isotopes = importdataset("data/isotopes.csv", ',', importas=:Tuple)
+kerogen = importdataset("data/kerogen.csv", ',', importas=:Tuple)
+#=
+    Note that isotopes has samples calibrated to both VPDB and PDB - this should be fixed ASAP
+=#
+
+## -- VPDB to PDB conversion
+# also adding uncertanties for age and isotopes if they dont have them?
+# or is it better to only use the ones that have uncertainties?
+n = length(isotopes.key)
+isopdb = (key = isotopes.key, d13c_org = zeros(n), d13c_carb = zeros(n))
+
+for i in 1:lastindex(isotopes.key)
+    if isotopes.c_standard[i] == "PDB"
+        #= 
+            This won't work because you've already initialized the tuple
+            The algorithm needs to initialize the tuple at the same time it puts 
+            data into it
+
+            But based on the sync_vectors function I can probably modify the arrays
+            that are in the isotopes tuple... and there's no reason to save the old 
+            VPDB standard data here
+        =#
+    else
+        convert_vpdb!()
+    end
+end
+
+
+## -- Plot data and calibrated fractionation curve
+matches = build_match(kerogen, isotopes)
+plotmatch = plot(matches.hc, matches.d13c_org, seriestype=:scatter, msc=:auto,
+    framestyle=:box, label="", xlabel="H/C ratio", ylabel="δC13 org")
+display(plotmatch)
+
+#= hopefully this will work when I get the domain error to work?
+(x, y) = fit_rayleigh(matches.d13c_org, matches.hc)
+
+plot!(plotmatch, x, y, label="Rayleigh model")
+
+=#
+
+
+## -- Visualize non-resampled data
+isotoperaw = plot(isotopes.age, isotopes.d13c_org, label="organic",
+    seriestype=:scatter, msc=:auto, alpha=0.25, framestyle=:box
+)
+plot!(isotopes.age, isotopes.d13c_carb, label="carbonate", seriestype=:scatter,
+    msc=:auto, alpha=0.25, framestyle=:box, xlabel="Age [Ma]", ylabel="d13C [PDB OR VPDB]"
+)
+
+
+## -- Only use the data from isotopes and kerogen that has age and isotope uncertainties
+naniso_age = NamedTuple{(:age, :uncert)}(sync_vectors(isotopes.age, isotopes.age_uncertainty))
+nanorganic = NamedTuple{(:iso, :uncert)}(sync_vectors(isotopes.d13c_org, isotopes.corg_uncertainty))
+nancarbonate = NamedTuple{(:iso, :uncert)}(sync_vectors(isotopes.d13c_carb, isotopes.ccarb_uncertainty))
+nankgn_age = NamedTuple{(:age, :uncert)}(sync_vectors(kerogen.age, kerogen.age_uncertainty))
+
+
+## -- Visualize the data loss
+# Count the data in the filtered and unfiltered datasets
+edges = 0:100:3800
+(countall_org, all_org_ctr) = count_data(isotopes.age, isotopes.d13c_org, edges)
+(countorg, org_ctr) = count_data(isotopes.age, nanorganic.iso, edges)
+
+(countall_carb, all_carb_ctr) = count_data(isotopes.age, isotopes.d13c_carb, edges)
+(countcarb, carb_ctr) = count_data(isotopes.age, nancarbonate.iso, edges)
+
+(countall_hc, all_hc_ctr) = count_data(kerogen.age, kerogen.hc, edges)
+(counthc, hc_ctr) = count_data(nankgn_age.age, nankgn_age.age, edges)
+
+# Put the data into a format that groupedbar() can read. Centers should all be the same
+fmt_data = zeros(38,6)
+all_data = [countall_org, countorg, countall_carb, countcarb, countall_hc, counthc]
+
+# For each column, put the counts into the row
+nrows = size(fmt_data, 1)
+ncols = size(fmt_data, 2)
+
+for i in 1:ncols
+    for j in 1:nrows
+        fmt_data[j, i] = all_data[i][j]
+    end
+end
+
+# Plot the data
+groupedbar(fmt_data, bar_width=0.7)
+
+
+## -- Resample d13C and H/C values
+org_rs = NamedTuple{(:c, :m, :e)}(bin_bsr_means(naniso_age.age, nanorganic.iso, 0, 3800, 38,
+    x_sigma=naniso_age.uncert, y_sigma=nanorganic.uncert, sem=:sigma
+))
+
+carb_rs = NamedTuple{(:c, :m, :e)}(bin_bsr_means(naniso_age.age, nancarbonate.iso, 0, 3800, 38,
+    x_sigma=naniso_age.uncert, y_sigma=nancarbonate.uncert, sem=:sigma
+))
+
+hc_rs = NamedTuple{(:c, :m, :e)}(bin_bsr_means(nankgn_age.age, kerogen.hc, 0, 3800, 38,
+    x_sigma=nankgn_age.uncert, y_sigma=kerogen.hc*0.01, sem=:sigma
+))
+
+
+## -- Use the Rayleigh fractionation curve to correct d13C values
+# Parameters in as 0 for now because the fractionation function doesn't work :(
+org_initial = org_rs.m .- Δδ.(hc_rs.m, 0)
+
+
+## -- Plot resampled isotope values with raw data for comparison
+organics = plot(isotopes.age, isotopes.d13c_org, label="organic (raw data)", seriestype=:scatter,
+    msc=:auto, alpha=0.25, framestyle=:box, xlabel="Age [Ma]", ylabel="d13C [‰]"
+)
+plot!(organics, org_rs.c, org_rs.m, label="resampled mean", yerror=org_rs.e, 
+    seriestype=:scatter, msc=:auto
+)
+plot!(organics, org_rs.c, org_initial, label="corrected resampled mean", yerror=org_rs.e, 
+    seriestype=:scatter, msc=:auto, legend=:bottomleft
+)
+display(organics)
+
+carbonates = plot(isotopes.age, isotopes.d13c_carb, label="carbonate", seriestype=:scatter,
+    msc=:auto, alpha=0.25, framestyle=:box, xlabel="Age [Ma]", ylabel="d13C [‰]"
+)
+plot!(carbonates, carb_rs.c, carb_rs.m, label="resampled mean", yerror=carb_rs.e, 
+    seriestype=:scatter, msc=:auto
+)
+display(carbonates)
+
+
+## -- Calculate forg with resampled means
+d13c_mantle = -5.5
+
+# forg = (δmantle - δcarb) / (δorg - δcarb)
+forg = @. (-1 * carb_rs.m + d13c_mantle) / (org_intial - carb_rs.m)
+
+# Plot calculated forg and compare to the Des Marais plot and GOE
+des_marais = (;
+    age=[2650.0, 2495.5516180173463, 2047.2862072181294, 1949.6316329385436, 1853.1940688240234, 
+        1747.3141844633037, 1646.8618856663252, 1553.2220460691974, 1451.8744754266536, 1350.582859274457, 
+        1251.9162470079896, 1051.5664666811736, 957.5075512657118, 850.7471608277119, 756.0325287284863, 
+        656.6550224336061],
+    forg=[0.08958593677142582, 0.10020889676396522, 0.1494628368926606, 0.19049706238925668, 0.17004010071808257, 
+        0.11977338431409115, 0.12975286766763028, 0.14035064813951315, 0.14039261400727404, 0.14105567471789607, 
+        0.16009238967121547, 0.1497514947102282, 0.19076697804304346, 0.2210044219590288, 0.21133867232428727, 
+        0.14991501911778413]
+)
+
+plotforg = plot(org_rs.c, forg, marker=:circle, msc=:auto, label="calculated forg")
+plot!(plotforg, des_marais.age, des_marais.forg, marker=:circle, msc=:auto, label="des marais",
+    xlabel="Age [Ma]", ylabel="Carbon buried as organic"   
+)
+plot!(plotforg, [2500], seriestype=:vline, label="GOE [2500 Ma]")
+display(plotforg)
+
+
+## -- Calculate δ13C MCMC minimum for each bin
+
+
+
+
+
+## old code old code old code!!
 # Global variables
 global d13C_error = 0.2       # Strauss et al. (1992): uncertainty generally < 0.2‰
 
 
 ## -- Import data
-isotopes = importdataset("data/Compiled_CarbonIsotopes_Data_UncertaintyUpdate.csv", ',', importas=:Tuple)
-kerogen = importdataset("data/Compiled_hcRatio_Data_UncertaintyUpdate.csv", ',', importas=:Tuple)
+isotopes_old = importdataset("data/Compiled_CarbonIsotopes_Data_UncertaintyUpdate.csv", ',', importas=:Tuple)
+kerogen_old = importdataset("data/Compiled_hcRatio_Data_UncertaintyUpdate.csv", ',', importas=:Tuple)
 schopf = importdataset("data/schopf_5-5_data.csv", ',', importas=:Tuple)
 
 
 ## -- Identify formations that have both H/C and δ13C_org data
 # Set of formations that appear in both datasets
-uniques = intersect(Set(isotopes.Std_Fm_Name), Set(kerogen.Std_Fm_Name))
+uniques = intersect(Set(isotopes_old.Std_Fm_Name), Set(kerogen_old.Std_Fm_Name))
 
 # Create a new NamedTuple to store values
-match = (
+matches_old = (
     Std_Fm_Name = String[],
     Age = Float64[],
     d13C_org = Float64[],
@@ -31,20 +206,20 @@ match = (
 
 # For each element in match, get the average H/C ratio, δC13_org, and δC13_carb value
 for i in uniques
-    i_iso = findall(x -> x == i, isotopes.Std_Fm_Name)  # Returns an array of indices
-    i_kgn = findall(x -> x == i, kerogen.Std_Fm_Name)
+    i_iso = findall(x -> x == i, isotopes_old.Std_Fm_Name)  # Returns an array of indices
+    i_kgn = findall(x -> x == i, kerogen_old.Std_Fm_Name)
 
     # Average δC13_org, δC13_carb, and H/C values and add to NamedTuple
-    push!(match.Std_Fm_Name, i)
-    push!(match.Age, nanmean(isotopes.Age[i_iso]))
-    push!(match.d13C_org, nanmean(isotopes.d13C_org[i_iso]))
-    push!(match.d13C_carb, nanmean(isotopes.d13C_carb[i_iso]))
-    push!(match.HC, nanmean(kerogen.HC_Ratio[i_kgn]))
-    push!(match.TOC, nanmean(isotopes.TOC[i_iso]))
+    push!(matches_old.Std_Fm_Name, i)
+    push!(matches_old.Age, nanmean(isotopes_old.Age[i_iso]))
+    push!(matches_old.d13C_org, nanmean(isotopes_old.d13C_org[i_iso]))
+    push!(matches_old.d13C_carb, nanmean(isotopes_old.d13C_carb[i_iso]))
+    push!(matches_old.HC, nanmean(kerogen_old.HC_Ratio[i_kgn]))
+    push!(matches_old.TOC, nanmean(isotopes_old.TOC[i_iso]))
 end
 
 # Only values younger than 1.6Ga
-t = (match.Age .< 1600)
+t = (matches_old.Age .< 1600)
 
 
 ## -- Plot results
@@ -66,16 +241,16 @@ plot!(rel, schopf.HC[s], schopf.d13C[s],
 )
 
 # Plot δ13C (org) data
-plot!(rel, match.HC[.!t], match.d13C_org[.!t], # Greater than 1.6 Ga
+plot!(rel, matches_old.HC[.!t], matches_old.d13C_org[.!t], # Greater than 1.6 Ga
     color=:"#038cfc", seriestype=:scatter, label="δ13C (org) > 1.6Ga", msc=:auto
 )
 
-plot!(rel, match.HC[t], match.d13C_org[t],     # Less than 1.6 Ga
+plot!(rel, matches_old.HC[t], matches_old.d13C_org[t],     # Less than 1.6 Ga
     color=:"#003763", seriestype=:scatter, label="δ13C (org) < 1.6Ga", msc=:auto
 )
 
 # Plot δC13 (carb) data for comparison
-plot!(rel, match.HC, match.d13C_carb,
+plot!(rel, matches_old.HC, matches_old.d13C_carb,
     color=:"#3dbd46", seriestype=:scatter, label="δ13C (carb)", msc=:auto
 )
 
@@ -90,17 +265,13 @@ p₀ = Float64[1, 2, 0, 1.3, -30]
 lb = Float64[0, 0, 0, 1, -50]
 ub = Float64[Inf, 10, 1, 10, 0]
 
-fit = curve_fit(r₀, schopf.HC[s], schopf.d13C[s], p₀, lower=lb, upper=ub)
-display(fit.param)
+fitray = curve_fit(r₀, schopf.HC[s], schopf.d13C[s], p₀, lower=lb, upper=ub)
+display(fitray.param)
 
 x = 0:0.01:1.5
-plot!(rel, x, r₀(x, fit.param), label="Rayleigh model")
+plot!(rel, x, r₀(x, fitray.param), label="Rayleigh model")
 display(rel)
-savefig("HC ratio and δ13C.pdf")
-
-
-## -- Repeat above using key system
-# Compares individual samples rather than averages for formations
+#savefig("HC ratio and δ13C.pdf")
 
 
 ## -- Normalize data by subtracting out the average value for that 100Ma bin
