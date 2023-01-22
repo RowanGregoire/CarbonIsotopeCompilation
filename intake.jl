@@ -175,14 +175,7 @@ a vector of the counts and bin centers.
 function count_data(age::Vector, data::Vector, edges::AbstractRange)
     nbins = length(edges) - 1
     bin_width = step(edges)
-
     counts = zeros(nbins)
-    centers = zeros(nbins)
-
-    # Get bin centers
-    for i in 1:nbins
-        centers[i] = (edges[i] + edges[i+1]) / 2
-    end
 
     # Count data in each bin
     for i in 1:lastindex(data)
@@ -192,7 +185,7 @@ function count_data(age::Vector, data::Vector, edges::AbstractRange)
         end
     end
 
-    return counts, centers
+    return counts, cntr(edges)
 end
 
 
