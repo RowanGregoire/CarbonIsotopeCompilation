@@ -102,8 +102,8 @@ Currently returns a weird domain error that I can't track down :(
 """
 function fit_rayleigh(d13c, hc)
     @. r₀(HC, p) = p[1]/(HC/p[2] + p[3])^(p[4]-1) + p[5]
-    p₀ = Float64[1, 2, 0, 1.3, -30]
-    lb = Float64[0, 0, 0, 1, -50]
+    p₀ = Float64[1, 2, 1e-3, 1.3, -30]
+    lb = Float64[0, 1e-3, 1e-3, 1, -50]
     ub = Float64[Inf, 10, 1, 10, 0]
 
     fitted = curve_fit(r₀, hc, d13c, p₀, lower=lb, upper=ub)
@@ -128,8 +128,8 @@ function sync_vectors(data1::Vector{Float64}, data2)
     @assert length(data1) == length(data2)
 
     # We want to make a copy of the data, not modify the original data
-    localdata1 = deepcopy(data1)
-    localdata2 = deepcopy(data2)
+    localdata1 = copy(data1)
+    localdata2 = copy(data2)
 
     # Remove values in data1 where data2 is NaN
     for i in 1:lastindex(localdata2)
@@ -147,8 +147,8 @@ function sync_vectors(data1::Vector, data2)
     @assert length(data1) == length(data2)
 
     # We want to make a copy of the data, not modify the original data
-    localdata1 = deepcopy(data1)
-    localdata2 = deepcopy(data2)
+    localdata1 = copy(data1)
+    localdata2 = copy(data2)
 
     # Must be of type Float64 to add NaNs
     localdata1 = convert(Vector{Float64}, localdata1)
@@ -175,12 +175,13 @@ a vector of the counts and bin centers.
 function count_data(age::Vector, data::Vector, edges::AbstractRange)
     nbins = length(edges) - 1
     bin_width = step(edges)
+    agemin = first(edges)
     counts = zeros(nbins)
 
     # Count data in each bin
     for i in 1:lastindex(data)
         if !isnan(data[i]) && !isnan(age[i])
-            bin_index = convert(Int, age[i] ÷ bin_width) + 1
+            bin_index = convert(Int, (age[i] - agemin) ÷ bin_width) + 1
             counts[bin_index] += 1
         end
     end
@@ -224,6 +225,7 @@ function knit_vectors(source)
     # Make sure all vectors in source are the same length
     #=
     @assert ... ?
+    all(x->isequal(eachindex(x), eachindex(first(a))), a)
     =#
 
     # Initialize target array
@@ -263,3 +265,4 @@ function Δδ(r, param)
     # Equation from Des Marais 1992
     return 4.05 - 3.05r + 0.785/r + 0.0165/r^2 - (8.79E-4)/r^3
 end
+
