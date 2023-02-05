@@ -1,6 +1,5 @@
-#=
-    Functions used for carbon isotope compilation intake and initial analysis!
-=#
+## --- Functions used for carbon isotope compilation intake and initial analysis!
+
 
 ## -- Load the packages we'll use
 using StatGeochem
@@ -285,3 +284,42 @@ function bin_means(x::Vector, y::Vector, edges)
 
     return (edges[1:end-1] + edges[2:end])/2, sums ./ counts, sigma
 end
+
+
+"""
+```julia
+estimate_hc(age, hc, bound::Number=10)
+```
+
+Estimates H/C ratios for elements in `hc` that are `NaN`. For each `NaN` element
+in `hc`, randomly select a non-`NaN` H/C value from the points with an age weighting
+`bound` from the age of the sample.
+"""
+function estimate_hc!(age, hc, bound::Number=10)
+  p = Progress(length(age) ÷ 10 , desc = "Finding H/C Ratios: ")
+
+  @inbounds for i in eachindex(hc)
+      if isnan(hc[i])
+          # Get all samples in the age range
+          target_age = age[i]
+          t = @. (target_age - bound) < age < (target_age + bound)
+
+          # Make sure the bound has data
+          s = @. !isnan(hc[t])
+          newbound = bound
+          while isempty(hc[t][s])
+              # L + ratio + no data in your subset
+              # Is there a way to make this recursive? seems to throw me into a infinite loop
+              # Is that even useful?
+              newbound += 5
+              t = @. (target_age - newbound) < age < (target_age + newbound)
+              s = @. !isnan(hc[t])
+          end
+
+          # Randomly pick one and assign it to be the H/C value for that sample
+          hc[i] = rand(hc[t][s])
+      end
+      (i % 10 == 0) && next!(p)
+  end
+end
+

@@ -93,38 +93,7 @@ sbsr = (lat = bsr_data[:,1][t], long = bsr_data[:,2][t], age = bsr_data[:,3][t],
     org = bsr_data[:,4][t], carb = bsr_data[:,5][t], hc = bsr_data[:,6][t]
 )
 
-# Estimate H/C ratios for samples that don't have them
-bound = 25  # ± 25 Ma range to grab an H/C ratio. Fairly arbitrary
-p = Progress(length(sbsr.age) ÷ 10 , desc = "Finding H/C Ratios: ")
-
-#=
-    check - this would not be a good place to use @turbo becuase I need to do things before
-    assigning a value to sbsr.hc
-=#
-for i in eachindex(sbsr.hc)
-    if isnan(sbsr.hc[i])
-        # Get all samples in the age range
-        target_age = sbsr.age[i]
-        t = @. (target_age - bound) < sbsr.age < (target_age + bound)
-
-        # Make sure the bound has data
-        s = @. !isnan(sbsr.hc[t])
-        newbound = bound
-        while isempty(sbsr.hc[t][s])
-            # L + ratio + no data in your subset
-            # Is there a way to make this recursive? seems to throw me into a infinite loop
-            # Is that even useful?
-            newbound += 5
-            t = @. (target_age - newbound) < sbsr.age < (target_age + newbound)
-            s = @. !isnan(sbsr.hc[t])
-        end
-
-        # Randomly pick one and assign it to be the H/C value for that sample
-        sbsr.hc[i] = rand(sbsr.hc[t][s])
-    end
-    (i % 10 == 0) && next!(p)
-end
-
+estimate_hc!(sbsr.age, sbsr.hc, 5)
 
 ## --- Compute H/C adjustment using Rayleigh and Des Mariais style corrections
 org_initial_rf = sbsr.org .- Δδ(sbsr.hc, params)
