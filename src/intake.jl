@@ -6,6 +6,7 @@ using StatGeochem
 using Statistics
 using Chron
 using LsqFit
+using ProgressMeter
 
 ## -- Fuctions!
 

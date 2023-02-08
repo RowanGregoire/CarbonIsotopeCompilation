@@ -136,10 +136,10 @@ display(pdm)
 savefig(pdm, "output/corrected_desmarais.pdf")
 
 forg_dm = @. (d13c_mantle .- carb_bin.m) / (dm_bin.m - carb_bin.m)
-plotforg = plot(rf_bin.c, forg, marker=:circle, msc=:auto, label="calculated f(org)")
+plotforg = plot(rf_bin.c, forg_dm, marker=:circle, msc=:auto, label="calculated f(org)")
 plot!(plotforg, des_marais.age, des_marais.forg, marker=:circle, msc=:auto, 
     label="Des Marais f(org)", xlabel="Age [Ma]", ylabel="Fraction of carbon buried as organic", 
-    title="Preliminary f(org) - Des Marais Correction", framestyle=:box   
+    title="Preliminary f(org) - Des Marais Correction", framestyle=:box, legend=:topright    
 )
 display(plotforg)
 savefig(plotforg, "output/forg_desmarais.pdf")
@@ -156,21 +156,81 @@ display(prf)
 savefig(prf, "output/corrected_rayleigh.pdf")
 
 forg_rf = @. (d13c_mantle .- carb_bin.m) / (rf_bin.m - carb_bin.m)
-plotforg = plot(rf_bin.c, forg, marker=:circle, msc=:auto, label="calculated f(org)")
+plotforg = plot(rf_bin.c, forg_rf, marker=:circle, msc=:auto, label="calculated f(org)")
 plot!(plotforg, des_marais.age, des_marais.forg, marker=:circle, msc=:auto, 
     label="Des Marais f(org)", xlabel="Age [Ma]", ylabel="Fraction of carbon buried as organic", 
-    title="Preliminary f(org) - Rayleigh Correction", framestyle=:box   
+    title="Preliminary f(org) - Rayleigh Correction", framestyle=:box, legend=:topright   
 )
 display(plotforg)
 savefig(plotforg, "output/forg_rayleigh.pdf")
 
 
+## -- Try replicating the Des Marais plots 
+# Restrict the data to the Schopf and Klein 1992 data
+dm_sources = [
+    "Abell et al. 1985 \"Archean\""
+    "Schidlowski et al. 1979"
+    "Schopf and Klein 1992"
+    "Thode and Goodwin 1983"
+    "Veizer and Hoefs 1976"
+    "McKirdy and Powell 1974"
+]
+
+# Since we'll be using it frequently, make a new data set that's just the data we want
+t = @. !isnan(newdata.key)      # Initialize any BitVector -- we'll change it later
+for i in eachindex(newdata.data_reference)
+    for j in dm_sources
+        if newdata.data_reference[i] == j
+            t[i] = true
+            break
+        else
+            t[i] = false
+        end
+    end
+end
+
+dm_data = (
+    key = newdata.key[t], 
+    lat = newdata.lat[t],
+    long = newdata.long[t],
+    coordinate_uncertainty = newdata.coordinate_uncertainty[t],
+    age = newdata.age[t],
+    age_uncertainty = newdata.age_uncertainty[t],
+    d13c_org = newdata.d13c_org[t], 
+    corg_uncertainty = newdata.corg_uncertainty[t],
+    d13c_carb = newdata.d13c_carb[t],
+    ccarb_uncertainty = newdata.ccarb_uncertainty[t],
+    hc = newdata.hc[t]
+)
+
+# Apply Des Marais correction and calculate forg
+δ₀ = dm_data.d13c_org .- Δδ(dm_data.hc, :DesMarais)
+obin = NamedTuple{(:c, :m, :e)}(bin_means(dm_data.age, dm_data.d13c_org, 0:100:3800))
+cbin = NamedTuple{(:c, :m, :e)}(bin_means(dm_data.age, dm_data.d13c_carb, 0:100:3800))
+forg = @. (d13c_mantle .- cbin.m) / (obin.m - cbin.m)
+
+plotforg = plot(obin.c, forg, marker=:circle, msc=:auto, label="calculated f(org)")
+plot!(plotforg, des_marais.age, des_marais.forg, marker=:circle, msc=:auto, 
+    label="Des Marais f(org)", xlabel="Age [Ma]", ylabel="Fraction of carbon buried as organic", 
+    title="Des Marias f(org) Replicate", framestyle=:box, legend=:topright   
+)
+display(plotforg)
+# hmmm 🤔😟😨😞😢
+
+
+
+
+
+
+
+
+
 #=
 TO DO: This has not been corrected for the new resampled data because this data does not
 propagate uncertainties. Unsure what to put the uncertainty needed for this function as
-
-
+=#
 ## --- Calculate δ13C MCMC minimum for each bin using the Rayleigh-corrected data
+#=
 nsteps = 10000
 dist = ones(10)
 binedges = 0:100:3800
