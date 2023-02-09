@@ -72,14 +72,15 @@ hc_rs = NamedTuple{(:c, :m, :e)}(bin_bsr_means(newdata.age, newdata.hc, 0, 3800,
 
 
 ## -- Bootstrap resample data in an array using a sample-per-row method
-# data_head = ["lat" "long" "age" "d13c_org" "d13c_carb" "hc"]
-# sigma_head = ["lat_sigma" "long_sigma" "age_sigma" "d13c_org_sigma" "d13c_carb_sigma" "hc_sigma"]
-
 # Format data for bsresample()
-fmtdata = unelementify(newdata, (:lat, :long, :age, :d13c_org, :d13c_carb, :hc), floatout=true)
-fmtsigma = unelementify(newdata, (:coordinate_uncertainty, :coordinate_uncertainty, :age_uncertainty, :corg_uncertainty, :ccarb_uncertainty,), floatout=true)
-fmtsigma = hcat(fmtsigma, data.hc*0.01)   # Add 1% uncertainty for H/C ratio
+ndata = length(newdata.key)
+fmtdata = unelementify(newdata, (:lat, :long, :age, :d13c_org, :corg_uncertainty, :d13c_carb, :ccarb_uncertainty, :hc), floatout=true)
+fmtsigma = unelementify(newdata, (:coordinate_uncertainty, :coordinate_uncertainty, :age_uncertainty, :corg_uncertainty), floatout=true)
 
+# Add 1% uncertainty for H/C ratio and 0 uncertainty for resampled uncertainties
+fmtsigma = hcat(fmtsigma, zeros(ndata), newdata.ccarb_uncertainty, zeros(ndata), data.hc*0.01)
+
+# Resample
 nrows = 100000  # Gets mad at 1e6
 k = invweight(newdata.lat, newdata.long, newdata.age)   # Calculate inverse weights
 p = 1.0 ./ ((k .* median(5.0 ./ k)) .+ 1.0)             # Keep rougly one-fith of the data in each resampling
@@ -88,12 +89,14 @@ bsr_data = bsresample(fmtdata, fmtsigma, nrows, p)
 
 ## --- Sanitize data and get H/C ratios for all samples
 t = @. bsr_data[:,3] > 0    # Only data where the age is greater than 0
-
 sbsr = (lat = bsr_data[:,1][t], long = bsr_data[:,2][t], age = bsr_data[:,3][t], 
-    org = bsr_data[:,4][t], carb = bsr_data[:,5][t], hc = bsr_data[:,6][t]
+    org = bsr_data[:,4][t], org_sigma = bsr_data[:,5][t], 
+    carb = bsr_data[:,6][t], carb_sigma = bsr_data[:,7][t],
+    hc = bsr_data[:,8][t]
 )
 
 estimate_hc!(sbsr.age, sbsr.hc, 5)
+
 
 ## --- Compute H/C adjustment using Rayleigh and Des Mariais style corrections
 org_initial_rf = sbsr.org .- Δδ(sbsr.hc, params)
@@ -132,7 +135,6 @@ pdm = plot(org_bin.c, org_bin.m, yerror=2*org_bin.e, seriestype=:scatter, msc=:a
 plot!(pdm, dm_bin.c, dm_bin.m, yerror=2*dm_bin.e, seriestype=:scatter, msc=:auto, 
     label="Des Marais correction", xlabel="Age [Ma]", ylabel="δ13C (org) [‰]", framestyle=:box
 )
-display(pdm)
 savefig(pdm, "output/corrected_desmarais.pdf")
 
 forg_dm = @. (d13c_mantle .- carb_bin.m) / (dm_bin.m - carb_bin.m)
@@ -141,7 +143,6 @@ plot!(plotforg, des_marais.age, des_marais.forg, marker=:circle, msc=:auto,
     label="Des Marais f(org)", xlabel="Age [Ma]", ylabel="Fraction of carbon buried as organic", 
     title="Preliminary f(org) - Des Marais Correction", framestyle=:box, legend=:topright    
 )
-display(plotforg)
 savefig(plotforg, "output/forg_desmarais.pdf")
 
 # Compare uncorrected vs. Rayleigh fractionation corrected data and compute f_org
@@ -152,7 +153,6 @@ plot!(prf, rf_bin.c, rf_bin.m, yerror=2*rf_bin.e, seriestype=:scatter, msc=:auto
     label="Rayleigh correction", xlabel="Age [Ma]", ylabel="δ13C (org) [‰]", framestyle=:box, 
     legend=:bottomleft, ylims=(-70,10)
 )
-display(prf)
 savefig(prf, "output/corrected_rayleigh.pdf")
 
 forg_rf = @. (d13c_mantle .- carb_bin.m) / (rf_bin.m - carb_bin.m)
@@ -161,8 +161,74 @@ plot!(plotforg, des_marais.age, des_marais.forg, marker=:circle, msc=:auto,
     label="Des Marais f(org)", xlabel="Age [Ma]", ylabel="Fraction of carbon buried as organic", 
     title="Preliminary f(org) - Rayleigh Correction", framestyle=:box, legend=:topright   
 )
-display(plotforg)
 savefig(plotforg, "output/forg_rayleigh.pdf")
+
+
+## --- Using the Rayleigh corrected data, make plots of the raw and resampled data 
+# Carbonate 
+plot(data.age, data.d13c_carb, seriestype=:scatter, label="raw data", alpha = 0.25, msc=:auto)
+plot!(carb_rs.c, carb_rs.m, yerror=carb_rs.e, seriestype=:scatter, label="resampled mean", msc=:auto,
+    framestyle=:box, legend=:topright, xlabel="age", ylabel="δ13C [‰]", title="δ13C Carbonate"
+)
+savefig("output/rs_carbonates.pdf")
+
+# Organic 
+plot(data.age, data.d13c_org, seriestype=:scatter, label="raw data", alpha = 0.25, msc=:auto)
+plot!(org_rs.c, org_rs.m, yerror=org_rs.e, seriestype=:scatter, label="resampled mean", msc=:auto,
+    framestyle=:box, legend=:topright, xlabel="age", ylabel="δ13C [‰]", title="δ13C Organic"
+)
+plot!(rf_bin.c, rf_bin.m, yerror=org_bin.e, seriestype=:scatter, label="Rayleigh-corrected", msc=:auto)
+savefig("output/rs_organics.pdf")
+
+# H/C
+plot(data.age, data.hc, seriestype=:scatter, label="raw data", alpha = 0.25, msc=:auto)
+plot!(hc_rs.c, hc_rs.m, yerror=hc_rs.e, seriestype=:scatter, label="resampled mean", msc=:auto,
+    framestyle=:box, legend=:topright, xlabel="age", ylabel="H/C", title="H/C Kerogen"
+)
+savefig("output/rs_kerogen.pdf")
+
+
+## -- Plot the Phanerozoic in greater resolution to see what's going on
+t = @. newdata.age <= 541
+phan = plot(newdata.age[t], newdata.d13c_org[t], seriestype=:scatter, label="organic", msc=:auto, alpha = 0.25)
+plot!(phan, newdata.age[t], newdata.d13c_carb[t], seriestype=:scatter, label="carbonate", msc=:auto, alpha = 0.25, 
+    framestyle=:box, legend=:topleft, xlabel="age", ylabel="δ13C [‰]", ylims=(-40,20), size=(600,600)
+)
+savefig("output/phanerozoic.pdf")
+
+
+## -- Calculate MCMC minimum for the new resampled dataset
+# Preallocate
+nsteps = 10000
+dist = ones(10)
+binedges = 0:100:3800
+bincntrs = cntr(binedges)
+mcmc_d13c = (iso = similar(bincntrs), uncert = similar(bincntrs))
+
+for i in 1:lastindex(bincntrs)
+    # Only look at the data that is in the bin and is not NaN
+    t = @. (binedges[i] < sbsr.age < binedges[i+1]) && !isnan(sbsr.age) && !isnan(org_initial_rf)
+
+    # Only do the metropolis calculation if there are more than 2 data points
+    if count(t) > 2
+        d13c_t = org_initial_rf[t]
+        sig_t = sbsr.carb_sigma[t]
+
+        mindist = metropolis_min(nsteps, dist, d13c_t, sig_t, burnin=5000)
+        mcmc_d13c.iso[i] = nanmean(mindist)
+        mcmc_d13c.uncert[i] = nanstd(mindist)
+    else
+        mcmc_d13c.iso[i] = mcmc_d13c.uncert[i] = NaN
+    end
+end
+
+plot(data.age, data.d13c_org, seriestype=:scatter, label="raw data", alpha = 0.25, msc=:auto)
+plot!(rf_bin.c, rf_bin.m, yerror=org_bin.e, seriestype=:scatter, label="Rayleigh-corrected", msc=:auto, 
+    framestyle=:box, legend=:topright, xlabel="age", ylabel="δ13C [‰]", title="δ13C Organic MCMC Minimum "
+)
+plot!(bincntrs, mcmc_d13c.iso, yerror=mcmc_d13c.uncert, label="MCMC minimum", msc=:auto, seriestype=:scatter)
+savefig("output/mcmc_d13c.pdf")
+
 
 
 ## -- Try replicating the Des Marais plots 
@@ -177,14 +243,12 @@ dm_sources = [
 ]
 
 # Since we'll be using it frequently, make a new data set that's just the data we want
-t = @. !isnan(newdata.key)      # Initialize any BitVector -- we'll change it later
+t = falses(length(newdata.key))      # Initialize BitVector
 for i in eachindex(newdata.data_reference)
     for j in dm_sources
         if newdata.data_reference[i] == j
             t[i] = true
             break
-        else
-            t[i] = false
         end
     end
 end
@@ -216,55 +280,3 @@ plot!(plotforg, des_marais.age, des_marais.forg, marker=:circle, msc=:auto,
 )
 display(plotforg)
 # hmmm 🤔😟😨😞😢
-
-
-
-
-
-
-
-
-
-#=
-TO DO: This has not been corrected for the new resampled data because this data does not
-propagate uncertainties. Unsure what to put the uncertainty needed for this function as
-=#
-## --- Calculate δ13C MCMC minimum for each bin using the Rayleigh-corrected data
-#=
-nsteps = 10000
-dist = ones(10)
-binedges = 0:100:3800
-bincntrs = cntr(binedges)
-
-mcmc_d13c = (iso = similar(bincntrs), uncert = similar(bincntrs))
-
-for i in 1:lastindex(bincntrs)
-    # Only look at the data that is in the bin and is not NaN
-    t = @. (binedges[i] < sbsr.age < binedges[i+1]) && !isnan(sbsr.age) && !isnan(org_initial_rf)
-
-    # Only do the metropolis calculation if there are more than 2 data points
-    if count(t) > 2
-        d13c_t = org_initial_rf[t]
-        sig_t = newdata.corg_uncertainty[t]
-
-        mindist = metropolis_min(nsteps, dist, d13c_t, sig_t, burnin=5000)
-        mcmc_d13c.iso[i] = nanmean(mindist)
-        mcmc_d13c.uncert[i] = nanstd(mindist)
-    else
-        mcmc_d13c.iso[i] = mcmc_d13c.uncert[i] = NaN
-    end
-end
-
-## Replot the organics plot - it's far enough up in the code that it makes sense to redo it
-organics = plot(newdata.age, newdata.d13c_org, label="organic (raw data)", seriestype=:scatter,
-    msc=:auto, alpha=0.25, framestyle=:box, xlabel="Age [Ma]", ylabel="d13C [‰]"
-)
-plot!(organics, org_rs.c, org_rs.m, label="resampled mean", yerror=org_rs.e, 
-    seriestype=:scatter, msc=:auto
-)
-plot!(organics, bincntrs, mcmc_d13c.iso, yerror=mcmc_d13c.uncert, label="MCMC minimum",
-    seriestype=:scatter, msc=:auto, legend=:bottomleft, size=(600,1200)
-)
-display(organics)
-savefig(organics, "output/mcmc_d13c.pdf")
-=#
