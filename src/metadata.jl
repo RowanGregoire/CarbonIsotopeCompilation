@@ -142,6 +142,7 @@ latlons = importdataset("data/locations.csv", ',', importas=:Tuple)
 file = open("output/updated_locations.csv", "w")
 write(file, "Country, Latitude (deg), Longitude (deg), Uncertainty (arc-deg)\n")
 
+# This uses a version of dist_uncert that has not been merged with StatGeochem.jl as of 2/13/23
 # Calculate center and uncertainty and put into a .csv
 for i in eachindex(latlons.Location)
     lats = [latlons.lat1[i], latlons.lat2[i], latlons.lat3[i], latlons.lat4[i]]
