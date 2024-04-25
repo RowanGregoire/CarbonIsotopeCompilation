@@ -237,58 +237,6 @@ end
 
 """
 ```julia
-(x::Vector, y::Vector, edges::LinRange)
-```
-
-Returns the means `m` and 1-σ uncertainties `e` for a variable `y` binned by independent variable `x`
-into bins defined by `edges`.
-
-### Example
-```
-(c, m, e) = bin_means(x, y, edges)
-```
-"""
-function bin_means(x::Vector, y::Vector, edges)
-    nbins = length(edges) - 1
-    bin_width = step(edges)
-    xmin = first(edges)
-
-    # Preallocate
-    sums = zeros(Float64, nbins)
-    counts = zeros(Int, nbins)
-    ordered = Array{Float64}(undef, length(y), nbins)
-    sigma = zeros(Float64, nbins)
-    
-    # Fill sums and counts vectors to calculate means. Add data to stdevs array
-    # Good canidate for @inbounds but only AFTER it's been bug tested so it doesn't segfault?
-    for i in eachindex(x)
-        if !isnan(x[i]) && !isnan(y[i])
-            bin_index = Int((x[i] - xmin) ÷ bin_width) + 1
-
-            # Make sure bin_index is valid
-            if 1 <= bin_index <= nbins
-                sums[bin_index] += y[i]
-                counts[bin_index] += 1
-
-
-                # Keeping the data points in this array means we can index into a specific
-                # bin later to compute the standard deviation
-                ordered[counts[bin_index], bin_index] = y[i]
-            end
-        end
-    end
-
-    # Calculate standard deviation for each bin. If there is no data, set error to NaN
-    for i in 1:nbins
-        sigma[i] = ifelse(counts[i] == 0, NaN, std(ordered[1:counts[i], i]))   # I don't think this is grabbing the things I want it to
-    end
-
-    return (edges[1:end-1] + edges[2:end])/2, sums ./ counts, sigma
-end
-
-
-"""
-```julia
 estimate_hc(age, hc, bound::Number=10)
 ```
 

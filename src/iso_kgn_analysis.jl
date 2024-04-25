@@ -15,8 +15,7 @@ data = importdataset("data/compilation.csv", ',', importas=:Tuple)
 ## -- Plot d13C org and H/C relationship and calibrated fractionation curve
 t = @. !isnan(data.d13c_org) && !isnan(data.hc)
 plotmatch = plot(data.hc[t], data.d13c_org[t], seriestype=:scatter, msc=:auto,
-    framestyle=:box, label="", xlabel="H/C ratio", ylabel="δC13 org", 
-    title="H/C and δ13C Relationship"
+    framestyle=:box, label="", xlabel="H/C ratio", ylabel="δC13 org" 
 )
 
 params = fit_rayleigh(data.d13c_org[t], data.hc[t])
@@ -32,8 +31,7 @@ isotoperaw = plot(data.age, data.d13c_org, label="organic",
     seriestype=:scatter, msc=:auto, alpha=0.25, framestyle=:box
 )
 plot!(data.age, data.d13c_carb, label="carbonate", seriestype=:scatter,
-    msc=:auto, alpha=0.25, framestyle=:box, xlabel="Age [Ma]", ylabel="d13C [PDB OR VPDB]",
-    title="Raw Isotope Data"
+    msc=:auto, alpha=0.25, framestyle=:box, xlabel="Age [Ma]", ylabel="d13C [PDB OR VPDB]"
 )
 savefig(isotoperaw, "output/raw_data.pdf")
 
@@ -141,7 +139,7 @@ forg_dm = @. (d13c_mantle .- carb_bin.m) / (dm_bin.m - carb_bin.m)
 plotforg = plot(rf_bin.c, forg_dm, marker=:circle, msc=:auto, label="calculated f(org)")
 plot!(plotforg, des_marais.age, des_marais.forg, marker=:circle, msc=:auto, 
     label="Des Marais f(org)", xlabel="Age [Ma]", ylabel="Fraction of carbon buried as organic", 
-    title="Preliminary f(org) - Des Marais Correction", framestyle=:box, legend=:topright    
+     framestyle=:box, legend=:topright    
 )
 savefig(plotforg, "output/forg_desmarais.pdf")
 
@@ -156,10 +154,10 @@ plot!(prf, rf_bin.c, rf_bin.m, yerror=2*rf_bin.e, seriestype=:scatter, msc=:auto
 savefig(prf, "output/corrected_rayleigh.pdf")
 
 forg_rf = @. (d13c_mantle .- carb_bin.m) / (rf_bin.m - carb_bin.m)
-plotforg = plot(rf_bin.c, forg_rf, marker=:circle, msc=:auto, label="calculated f(org)")
+plotforg = plot(rf_bin.c, forg_rf, marker=:circle, msc=:auto, label="Rayleigh Corrected f(org)")
 plot!(plotforg, des_marais.age, des_marais.forg, marker=:circle, msc=:auto, 
     label="Des Marais f(org)", xlabel="Age [Ma]", ylabel="Fraction of carbon buried as organic", 
-    title="Preliminary f(org) - Rayleigh Correction", framestyle=:box, legend=:topright   
+    framestyle=:box, legend=:topright   
 )
 savefig(plotforg, "output/forg_rayleigh.pdf")
 
@@ -168,14 +166,14 @@ savefig(plotforg, "output/forg_rayleigh.pdf")
 # Carbonate 
 plot(data.age, data.d13c_carb, seriestype=:scatter, label="raw data", alpha = 0.25, msc=:auto)
 plot!(carb_rs.c, carb_rs.m, yerror=carb_rs.e, seriestype=:scatter, label="resampled mean", msc=:auto,
-    framestyle=:box, legend=:topright, xlabel="age", ylabel="δ13C [‰]", title="δ13C Carbonate"
+    framestyle=:box, legend=:topright, xlabel="Age [Ma]", ylabel="δ13C [‰]"
 )
 savefig("output/rs_carbonates.pdf")
 
 # Organic 
 plot(data.age, data.d13c_org, seriestype=:scatter, label="raw data", alpha = 0.25, msc=:auto)
 plot!(org_rs.c, org_rs.m, yerror=org_rs.e, seriestype=:scatter, label="resampled mean", msc=:auto,
-    framestyle=:box, legend=:topright, xlabel="age", ylabel="δ13C [‰]", title="δ13C Organic"
+    framestyle=:box, legend=:topright, xlabel="Age [Ma]", ylabel="δ13C [‰]"
 )
 plot!(rf_bin.c, rf_bin.m, yerror=org_bin.e, seriestype=:scatter, label="Rayleigh-corrected", msc=:auto)
 savefig("output/rs_organics.pdf")
@@ -183,7 +181,7 @@ savefig("output/rs_organics.pdf")
 # H/C
 plot(data.age, data.hc, seriestype=:scatter, label="raw data", alpha = 0.25, msc=:auto)
 plot!(hc_rs.c, hc_rs.m, yerror=hc_rs.e, seriestype=:scatter, label="resampled mean", msc=:auto,
-    framestyle=:box, legend=:topright, xlabel="age", ylabel="H/C", title="H/C Kerogen"
+    framestyle=:box, legend=:topright, xlabel="Age [Ma]", ylabel="H/C"
 )
 savefig("output/rs_kerogen.pdf")
 
@@ -192,7 +190,7 @@ savefig("output/rs_kerogen.pdf")
 t = @. newdata.age <= 541
 phan = plot(newdata.age[t], newdata.d13c_org[t], seriestype=:scatter, label="organic", msc=:auto, alpha = 0.25)
 plot!(phan, newdata.age[t], newdata.d13c_carb[t], seriestype=:scatter, label="carbonate", msc=:auto, alpha = 0.25, 
-    framestyle=:box, legend=:topleft, xlabel="age", ylabel="δ13C [‰]", ylims=(-40,20), size=(600,600)
+    framestyle=:box, legend=:topleft, xlabel="Age [Ma]", ylabel="δ13C [‰]", ylims=(-40,20), size=(600,600)
 )
 savefig("output/phanerozoic.pdf")
 
@@ -224,7 +222,7 @@ end
 
 plot(data.age, data.d13c_org, seriestype=:scatter, label="raw data", alpha = 0.25, msc=:auto)
 plot!(rf_bin.c, rf_bin.m, yerror=org_bin.e, seriestype=:scatter, label="Rayleigh-corrected", msc=:auto, 
-    framestyle=:box, legend=:topright, xlabel="age", ylabel="δ13C [‰]", title="δ13C Organic MCMC Minimum "
+    framestyle=:box, legend=:topright, xlabel="age", ylabel="δ13C [‰]"
 )
 plot!(bincntrs, mcmc_d13c.iso, yerror=mcmc_d13c.uncert, label="MCMC minimum", msc=:auto, seriestype=:scatter)
 savefig("output/mcmc_d13c.pdf")

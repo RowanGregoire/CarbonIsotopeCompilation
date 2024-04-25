@@ -1,4 +1,9 @@
 .DS_Store
 
+# Figure file types
+*.pdf
+*.png
+
 # Folders 
 output/
+figures/
