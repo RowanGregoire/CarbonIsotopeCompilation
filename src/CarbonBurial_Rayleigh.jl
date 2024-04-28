@@ -54,91 +54,91 @@
     # Takes about 22 minutes but I'm not sure how much more optimized this can get...
     # Maybe try restricting to only those that need to be replaced?
 
-    isHC = @. !isnan(simout.org[:,2]);
-    index = (1:nsims)[isHC];
-    ages = simout.org[:,3][isHC];
-    lats = simout.org[:,4][isHC];
-    lons = simout.org[:,5][isHC];
+    # isHC = @. !isnan(simout.org[:,2]);
+    # index = (1:nsims)[isHC];
+    # ages = simout.org[:,3][isHC];
+    # lats = simout.org[:,4][isHC];
+    # lons = simout.org[:,5][isHC];
 
-    p = Progress(nsims, desc="Assigning H/C...")
-    @time for i = 1:nsims
-        # Randomly select a H/C sample based on spatial and temporal similarity.
-        # Temporal similarity is weighted more heavily
-        hc = likelihood(
-            ages, simout.org[i,3],              # Ages
-            lats, lons,                         # Bulk locations
-            simout.org[i,4], simout.org[i,5],   # Sample locations
-            index,                              # Indices
-        )
-        simout.org[i,2] = ifelse(isHC[i], simout.org[i,2], simout.org[hc,2])
-        next!(p)
-    end
+    # p = Progress(nsims, desc="Assigning H/C...")
+    # @time for i = 1:nsims
+    #     # Randomly select a H/C sample based on spatial and temporal similarity.
+    #     # Temporal similarity is weighted more heavily
+    #     hc = likelihood(
+    #         ages, simout.org[i,3],              # Ages
+    #         lats, lons,                         # Bulk locations
+    #         simout.org[i,4], simout.org[i,5],   # Sample locations
+    #         index,                              # Indices
+    #     )
+    #     simout.org[i,2] = ifelse(isHC[i], simout.org[i,2], simout.org[hc,2])
+    #     next!(p)
+    # end
 
 
 ## --- [PLOT] Sanity check the organic carbon and H/C relationship 
-    h = plot(
-        framestyle=:box,
-        fontfamily=:Helvetica,
-        xlabel="Kerogen H/C ratio", ylabel="Organic δ¹³C [‰]",
-        fg_color_legend=:white,
-        size=(600,500),
-        right_margin=(25,:px),
-        # ylims=(-62,2),
-    )
+    # h = plot(
+    #     framestyle=:box,
+    #     fontfamily=:Helvetica,
+    #     xlabel="Kerogen H/C ratio", ylabel="Organic δ¹³C [‰]",
+    #     fg_color_legend=:white,
+    #     size=(600,500),
+    #     right_margin=(25,:px),
+    #     # ylims=(-62,2),
+    # )
 
-    # Resampled data, including data that was assigned an H/C value
-    c,m,e = binmeans(simout.org[:,2], simout.org[:,1], 0, 2, 10)
-    plot!(h, c, m, yerror=2e, 
-        label="", 
-        color=:black, msc=:auto,
-        seriestype=:scatter,
-    )
+    # # Resampled data, including data that was assigned an H/C value
+    # c,m,e = binmeans(simout.org[:,2], simout.org[:,1], 0, 2, 10)
+    # plot!(h, c, m, yerror=2e, 
+    #     label="", 
+    #     color=:black, msc=:auto,
+    #     seriestype=:scatter,
+    # )
 
-    # Check against curve fit from real data
-    t = @. !isnan(data.d13c_org) & !isnan(data.hc) .& (data.hc >= 0.1)
-    params = fit_rayleigh(data.d13c_org[t], data.hc[t])
-    x,y = rayleigh_curve(params, data.hc[t])
-    plot!(h, x, y, 
-        label="Rayleigh Fractionation", 
-        color=:red,
-        linewidth=2,
-    )
-    display(h)
-    savefig(h, "figures/rayleigh_resampled.pdf")
+    # # Check against curve fit from real data
+    # t = @. !isnan(data.d13c_org) & !isnan(data.hc) .& (data.hc >= 0.1)
+    # params = fit_rayleigh(data.d13c_org[t], data.hc[t])
+    # x,y = rayleigh_curve(params, data.hc[t])
+    # plot!(h, x, y, 
+    #     label="Rayleigh Fractionation", 
+    #     color=:red,
+    #     linewidth=2,
+    # )
+    # display(h)
+    # savefig(h, "figures/rayleigh_resampled.pdf")
 
 
 ## --- Try again! With the non-resampled data...
-    # Ok, that looked bad. What if we do matching using our exisiting data?
-    npoints = length(data.hc)
-    assigned_HC = Array{Float64}(undef, npoints, 1)
+    # # Ok, that looked bad. What if we do matching using our exisiting data?
+    # npoints = length(data.hc)
+    # assigned_HC = Array{Float64}(undef, npoints, 1)
 
-    isHC = @. !isnan(data.hc) & !isnan(data.d13c_org);
-    index = (1:npoints)[isHC];
-    ages = data.age[isHC];
-    lats = data.lat[isHC];
-    lons = data.lon[isHC];
+    # isHC = @. !isnan(data.hc) & !isnan(data.d13c_org);
+    # index = (1:npoints)[isHC];
+    # ages = data.age[isHC];
+    # lats = data.lat[isHC];
+    # lons = data.lon[isHC];
 
-    p = Progress(npoints, desc="Assigning H/C...")
-    @time for i = 1:npoints
-        # Randomly select a H/C sample based on spatial and temporal similarity.
-        # Temporal similarity is weighted more heavily
-        hc = likelihood(
-            ages, data.age[i],              # Ages
-            lats, lons,                     # Bulk locations
-            data.lat[i], data.lon[i],       # Sample locations
-            index,                          # Indices
-        )
-        assigned_HC[i] = ifelse(isHC[i], data.hc[i], data.hc[hc])
-        next!(p)
-    end
+    # p = Progress(npoints, desc="Assigning H/C...")
+    # @time for i = 1:npoints
+    #     # Randomly select a H/C sample based on spatial and temporal similarity.
+    #     # Temporal similarity is weighted more heavily
+    #     hc = likelihood(
+    #         ages, data.age[i],              # Ages
+    #         lats, lons,                     # Bulk locations
+    #         data.lat[i], data.lon[i],       # Sample locations
+    #         index,                          # Indices
+    #     )
+    #     assigned_HC[i] = ifelse(isHC[i], data.hc[i], data.hc[hc])
+    #     next!(p)
+    # end
 
-    # Plot relationship with all data...
-    h = plot(assigned_HC, data.d13c_org, seriestype=:scatter, msc=:auto, alpha=0.2, markersize=1)
-    c,m,e = binmeans(assigned_HC, data.d13c_org, 0, 1.5, 15)
-    plot!(c,m,yerror=e, seriestype=:scatter, color=:black, msc=:auto)
+    # # Plot relationship with all data...
+    # h = plot(assigned_HC, data.d13c_org, seriestype=:scatter, msc=:auto, alpha=0.2, markersize=1)
+    # c,m,e = binmeans(assigned_HC, data.d13c_org, 0, 1.5, 15)
+    # plot!(c,m,yerror=e, seriestype=:scatter, color=:black, msc=:auto)
     
-    display(h)
-    savefig(h, "figures/rayleigh_matched.pdf")
+    # display(h)
+    # savefig(h, "figures/rayleigh_matched.pdf")
 
 
 ## --- Try again!! But this time use an age - H/C value model 
@@ -155,14 +155,16 @@
 
     x = 50:50:3800
     y = Measurements.value.(hc_age.(x))
+    e = Measurements.uncertainty.(hc_age.(x))
     h = plot(data.age[t], data.hc[t], label="Observed", 
         seriestype=:scatter, msc=:auto,
         xlabel="Age [Ma.]", ylabel="[LOG] H/C Ratio",
         framestyle=:box,
+        fontfamily=:Helvetica,
         fg_color_legend=:white,
         yaxis=:log10
     )
-    plot!(x, y, label="Modeled", linewidth=2, color=:black)
+    plot!(x, y, ribbon=2*e, label="Modeled ± 2 s.d.", linewidth=2, color=:black)
     
     display(h)
     savefig(h, "figures/hc_age.pdf")
@@ -198,6 +200,72 @@
     
     display(h)
     savefig(h, "figures/rayleigh_agemodel.pdf")
+
+
+## --- Model sensitivity testing to error
+    # Secondary concern: the model intercept and slope appear to depend completely on the 
+    # error we (completely arbitrarily) assign to the H/C values 
+    t = .!isnan.(data.hc) .& (data.hc .!= 0);
+    x = 50:50:3800
+    e_test = 0.01:0.001:0.1
+    intercepts = Array{Float64}(undef, length(e_test), 1)
+    slopes = Array{Float64}(undef, length(e_test), 1)
+    pal = palette(:acton, length(e_test))
+
+    h1 = plot(data.age[t], data.hc[t], 
+        # label="Observed", 
+        label="",
+        seriestype=:scatter, msc=:auto,
+        xlabel="Age [Ma.]", ylabel="[LOG] H/C Ratio",
+        framestyle=:box,
+        fontfamily=:Helvetica,
+        fg_color_legend=:white,
+        yaxis=:log10,
+        # legend=:outerright,
+        # size=(800,400)
+    )
+    for i in eachindex(e_test) 
+        fobj = yorkfit(data.age[t], ageuncert[t], log.(data.hc[t]), fill(e_test[i], count(t)))
+        slopes[i] = fobj.slope.val
+        intercepts[i] = fobj.intercept.val
+        
+        model = exp.(x .* (fobj.slope) .+ (fobj.intercept))
+        y = Measurements.value.(model)
+        e = Measurements.uncertainty.(model)
+        plot!(h1, x, y, ribbon=2*e, 
+            # label="σ = $i; m = $m b = $b", 
+            label="",
+            linewidth=2, color=pal[i]
+        )
+    end
+    display(h1)
+    savefig(h1, "figures/hc_age_modelsensitivity_1.pdf")
+
+    h2 = plot(e_test, slopes, label="",
+        xlabel="Assigned Error", ylabel="Model Slope",
+        framestyle=:box,
+        fontfamily=:Helvetica,
+        fg_color_legend=:white,
+        zcolor=e_test, color=pal, msc=:auto,
+        markershape=:circle, markersize=3,
+        colorbar=false
+    )
+    # display(h2)
+
+    h3 = plot(e_test, intercepts, label="",
+        xlabel="Assigned Error", ylabel="Model Intercept",
+        framestyle=:box,
+        fontfamily=:Helvetica,
+        fg_color_legend=:white,
+        zcolor=e_test, color=pal, msc=:auto,
+        markershape=:circle, markersize=3,
+        colorbar=false
+    )
+    # display(h3)
+
+    h4 = plot(h2, h3, layout=(1, 2), size=(1200, 400))
+    display(h4)
+    savefig(h4, "figures/hc_age_modelsensitivity_2.pdf")
 
 
 ## --- Correct organic carbon data for post-depositional alteration with Rayleigh curve
