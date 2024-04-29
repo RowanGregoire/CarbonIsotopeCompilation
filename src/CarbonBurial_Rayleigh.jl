@@ -2,12 +2,12 @@
     # Attempt to H/C correct all samples to give ourselves more data  
 
     # Packages
-    using StatGeochem, Plots, Measurements
-    using LsqFit
+    using StatGeochem, Plots, Measurements, LsqFit
     using ProgressMeter
     using Isoplot: yorkfit
     using LoopVectorization: @turbo
     using LogExpFunctions: logsumexp
+    using KernelDensity: kde
 
     include("utilities/Utilities.jl")
 
@@ -275,13 +275,9 @@
     # x,y = rayleigh_curve(params, data.hc[t])
     # plot(x,y)
 
-    # # Correct organic carbon values
-    # d13c_org_rayleigh = r₀(simout.org[:,2], params)      # d13C from H/C
-    # Δd13c_org = simout.org[:,1] .- d13c_org_rayleigh     # Diff b/w modeled and measured
-
-    d13c_org_rayleigh = r₀(hc_assigned, params)        # d13C from H/C
-    Δd13c_org = data.d13c_org .- d13c_org_rayleigh     # Diff b/w modeled and measured
-    d13c_org_corr = data.d13c_org .+ Δd13c_org;
+    # Correct organic carbon values with initial H/C ratio set to 1.5
+    d13c_org_corr = data.d13c_org .- (r₀(hc_assigned, params) .-  r₀(1.5, params))
+    
 
     # Plot data 
     t = @. !isnan(data.d13c_org);
