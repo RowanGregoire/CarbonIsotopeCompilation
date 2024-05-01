@@ -61,25 +61,33 @@
         ageuncert[i] = ifelse(isnan(data.age_uncert[i]), data.age[i]*0.05, data.age_uncert[i])
     end
 
-    # Fit model, forcing a y intercept of 1.5
+    # Model based on real data, forcing a y intercept of 1.5
     t = @. !isnan(data.d13c_org) & !isnan(data.hc) & (data.hc > 0);
     t .&= data.std_fm_name .!= "Onverwacht Gp";
 
     x = [fill(0, 500); data.age[t]]
-    y = [log.(fill(1.5, 500)); log.(data.hc[t])]
-
     x_sigma = [fill(1e-8, 500); ageuncert[t]]
+    y = [log.(fill(1.5, 500)); log.(data.hc[t])]
     y_sigma = [fill(1e-8, 500); log.(fill(0.1, count(t)))]
 
+    # # Model based on resampled data 
+    # t = @. !isnan(simout.org[:,1]) & !isnan(simout.org[:,2]) & (simout.org[:,2] > 0);
+    # x = [fill(0, 500); simout.org[:,3][t]]
+    # x_sigma = [fill(1e-8, 500); fill(100, count(t))]
+    # y = [log.(fill(1.5, 500)); log.(simout.org[:,2][t])]
+    # y_sigma = [fill(1e-8, 500); log.(fill(0.1, count(t)))]
+
     fobj = yorkfit(x, x_sigma, y, y_sigma)
-    println("$(fobj.intercept)")
     hc_age(age) = exp(age * (fobj.slope) + (fobj.intercept))
 
     x = 50:50:3800
     y = Measurements.value.(hc_age.(x))
     e = Measurements.uncertainty.(hc_age.(x))
-    h = plot(data.age[t], data.hc[t],
+    h = plot(
+        data.age[t], data.hc[t],
         label="Observed", 
+        # simout.org[:,3][t], simout.org[:,2][t],
+        # label="",
         seriestype=:scatter, markersize=3,
         color=:darkturquoise, msc=:auto,
         xlabel="Age [Ma.]", ylabel="[LOG] H/C Ratio",
@@ -90,9 +98,9 @@
     )
     plot!(x, y, ribbon=2*e, 
         label="Modeled ± 2 s.d.", 
+        # label="",
         linewidth=2, color=:teal
     )
-    
     display(h)
     savefig(h, "figures/hc_age.pdf")
 
@@ -112,7 +120,9 @@
         color=:lightblue, msc=:auto,
         markersize=2,
         framestyle=:box, 
-        ylabel="d13c organic", xlabel="H/C ratio"
+        ylabel="d13c organic", xlabel="H/C ratio",
+        legend=:topright,
+        fg_color_legend=:white,
     )
     plot!(data.hc[t], data.d13c_org[t], 
         seriestype=:scatter, label="Observed", 
@@ -139,7 +149,8 @@
     t = @. !isnan(data.d13c_org);
     h = plot(
         framestyle=:box,
-        xlabel="Age [Ma.]", ylabel="d13c organic",
+        xlabel="Age [Ma.]", ylabel="d13c",
+        fg_color_legend=:white,
     )
 
     c,m,e = binmeans(data.age[t], data.d13c_org[t], 0,3800,38)
@@ -158,14 +169,37 @@
         markershape=:circle,
     )
 
+    c,m,e = binmeans(data.age, data.d13c_carb, 0,3800,38, relbinwidth=2)
+    s = .!isnan.(m)
+    plot!(c[s], m[s], yerror=2e, label="Carbonate (200 Ma. avg.)", 
+        color=colors.carb_dark, lcolor=colors.carb_dark, msc=:auto, 
+        # seriestype=:scatter,
+        markershape=:circle,
+    )
+
     display(h)
     savefig(h, "figures/isotope_corrected_v2.pdf")
 
 
-## --- Fraction buried as organic? Something is horribly and terribly wrong here 
+## --- How accurate is our carbonate carbon record? 
+    h = plot(
+        framestyle=:box,
+        xlabel="Age [Ma.]", ylabel="d13c",
+        fg_color_legend=:white,
+    )
+    plot!(data.age, data.d13c_carb, label="",
+        color=colors.carb_dark, msc=:auto, 
+        seriestype=:scatter,
+        markersize=1
+    )
+    
+
+## --- Fraction buried as organic?
     # Use running mean of carbonate values to smooth CIEs
     mantle = -5.5
-    c,carbonate,e = binmeans(data.age, data.d13c_carb, 0, 3800, 38, relbinwidth=3)
+    # c,carbonate,e = binmeans(data.age, data.d13c_carb, 0, 3800, 38, relbinwidth=4)
+    # carbonate = 0.0
+    carbonate = nanmean(data.d13c_carb)
 
     # Plot base
     h = plot(
